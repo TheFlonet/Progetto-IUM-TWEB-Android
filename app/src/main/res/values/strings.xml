@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">EasyReps</string>
+
+    <!--DAYS-->
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+
+    <!--DIALOG-->
+    <string name="confirm">Confirm</string>
+    <string name="confirm_booking">Confirm booking</string>
+    <string name="dialog_message">Confirm booking of %1$s with %2$s on %3$s (start at %4$d)?</string>
+    <string name="book_confirmation">Lesson successfully booked</string>
+    <string name="abort">Abort</string>
+
+    <!--INFO-->
+    <string name="about_app">EasyReps is an android application written in kotlin and using the material design components at their latest version.The application is composed of a single Activity in which Fragments are exchanged according to the information to be shown to the user. The Backend relies on Java Servlets to which it sends HTTP requests to receive JSON objects as answer.</string>
+    <string name="made_by">Application made by\nBarraco Christian, Bifulco Mario, Sciuto Samuele</string>
+
+    <!--MENU-->
+    <string name="login">Login</string>
+    <string name="account">Account</string>
+    <string name="about">About</string>
+
+    <!--LOGIN-ACCOUNT-->
+    <string name="image_avatar_sample">Image avatar sample</string>
+    <string name="username_hint">Enter username</string>
+    <string name="password_hint">Enter password</string>
+    <string name="guest">Guest</string>
+    <string name="course_history">Go to course history</string>
+    <string name="logout">Logout</string>
+    <string name="history_icon">History icon</string>
+    <string name="logout_icon">Logout icon</string>
+    <string name="username_null_error">Insert username</string>
+    <string name="password_null_error">Insert password</string>
+
+    <!--STATE-->
+    <string name="active">Active</string>
+    <string name="done">Done</string>
+    <string name="cancelled">Cancelled</string>
+
+    <!--HISTORY-->
+    <string name="cancel">Cancel</string>
+    <string name="cancel_reservation">Cancel reservation</string>
+    <string name="discard_reservation">Discard reservation</string>
+    <string name="discard_confirmation">Lesson unreserved</string>
+    <string name="discard_message">Do you want to discard %1$s with %2$s on %3$s (start at %4$d)?</string>
+    <string name="discard">Discard</string>
+    <string name="username_invalid_error">Invalid username</string>
+    <string name="password_invalid_error">Invalid password</string>
+    <string name="wrong_credential">Username or password are not correct</string>
+    <string name="no_connectivity">No internet connection, check your connectivity and try again</string>
+    <string name="no_connection_error">No connection available</string>
+</resources>

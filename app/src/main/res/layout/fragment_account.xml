@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.Account">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <ImageView
+        android:id="@+id/avatarImageViewAccount"
+        android:layout_width="@dimen/avatar_dim"
+        android:layout_height="@dimen/avatar_dim"
+        android:layout_margin="@dimen/large"
+        android:contentDescription="@string/image_avatar_sample"
+        android:src="@drawable/ic_avatar_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/userTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x_large"
+        android:text="@string/guest"
+        android:textSize="@dimen/h1"
+        app:layout_constraintBottom_toBottomOf="@+id/avatarImageViewAccount"
+        app:layout_constraintStart_toEndOf="@id/avatarImageViewAccount"
+        app:layout_constraintTop_toTopOf="@+id/avatarImageViewAccount" />
+
+    <Button
+        android:id="@+id/historyButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x_large"
+        android:text="@string/course_history"
+        app:layout_constraintBottom_toBottomOf="@+id/historyIcon"
+        app:layout_constraintStart_toEndOf="@+id/historyIcon"
+        app:layout_constraintTop_toTopOf="@+id/historyIcon" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x_large"
+        android:text="@string/logout"
+        app:layout_constraintBottom_toBottomOf="@+id/logoutIcon"
+        app:layout_constraintStart_toEndOf="@+id/logoutIcon"
+        app:layout_constraintTop_toTopOf="@+id/logoutIcon" />
+
+    <ImageView
+        android:id="@+id/historyIcon"
+        android:layout_margin="@dimen/x_large"
+        android:layout_width="@dimen/icon_dim"
+        android:layout_height="@dimen/icon_dim"
+        android:src="@drawable/ic_history"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatarImageViewAccount"
+        android:contentDescription="@string/history_icon" />
+
+    <ImageView
+        android:id="@+id/logoutIcon"
+        android:layout_width="@dimen/icon_dim"
+        android:layout_height="@dimen/icon_dim"
+        android:layout_margin="@dimen/x_large"
+        android:contentDescription="@string/logout_icon"
+        android:src="@drawable/ic_logout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/historyIcon" />
+</androidx.constraintlayout.widget.ConstraintLayout>
