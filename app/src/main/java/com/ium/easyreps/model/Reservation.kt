@@ -1,4 +1,4 @@
-package com.ium.easyreps.dto
+package com.ium.easyreps.model
 
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.State

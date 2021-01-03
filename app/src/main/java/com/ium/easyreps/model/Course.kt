@@ -1,4 +1,4 @@
-package com.ium.easyreps.dto
+package com.ium.easyreps.model
 
 class Course(var id: Int, var name: String) {
     override fun toString(): String {

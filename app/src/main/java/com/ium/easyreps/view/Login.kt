@@ -1,4 +1,4 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -41,7 +41,7 @@ class Login : Fragment() {
                 mView.findViewById<AppCompatEditText>(R.id.usernameEditTxt).text.toString()
             val password =
                 mView.findViewById<AppCompatEditText>(R.id.passwordEditTxt).text.toString()
-            if (existUser(username.trim(), password.trim())) {
+            if (canLog(username.trim(), password.trim())) {
                 findNavController().navigate(R.id.login_to_account)
             }
         }
@@ -49,7 +49,7 @@ class Login : Fragment() {
         return mView
     }
 
-    private fun existUser(username: String, password: String): Boolean {
+    private fun canLog(username: String, password: String): Boolean {
         val usernameField = mView.findViewById<TextInputLayout>(R.id.usernameTextInput)
         val passwordField = mView.findViewById<TextInputLayout>(R.id.passwordTextInput)
         usernameField.isErrorEnabled = false

@@ -1,4 +1,4 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerLessonsAdapter
-import com.ium.easyreps.dto.PrivateLesson
+import com.ium.easyreps.model.PrivateLesson
 
 class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter

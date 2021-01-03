@@ -1,4 +1,4 @@
-package com.ium.easyreps.dto
+package com.ium.easyreps.model
 
 class User(
     var id: Int = -1,

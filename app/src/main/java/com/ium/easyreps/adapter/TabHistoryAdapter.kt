@@ -4,11 +4,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.ium.easyreps.dto.Course
-import com.ium.easyreps.dto.Reservation
-import com.ium.easyreps.dto.Teacher
-import com.ium.easyreps.dto.User
-import com.ium.easyreps.fragment.HistoryList
+import com.ium.easyreps.model.Course
+import com.ium.easyreps.model.Reservation
+import com.ium.easyreps.model.Teacher
+import com.ium.easyreps.model.User
+import com.ium.easyreps.view.HistoryList
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.State
 

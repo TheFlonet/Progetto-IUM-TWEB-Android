@@ -4,10 +4,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.ium.easyreps.dto.Course
-import com.ium.easyreps.dto.PrivateLesson
-import com.ium.easyreps.dto.Teacher
-import com.ium.easyreps.fragment.CoursesList
+import com.ium.easyreps.model.Course
+import com.ium.easyreps.model.PrivateLesson
+import com.ium.easyreps.model.Teacher
+import com.ium.easyreps.view.CoursesList
 import com.ium.easyreps.util.Day
 
 class TabLessonsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

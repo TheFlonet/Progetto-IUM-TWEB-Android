@@ -1,4 +1,4 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerReservationAdapter
-import com.ium.easyreps.dto.PrivateLesson
-import com.ium.easyreps.dto.Reservation
+import com.ium.easyreps.model.Reservation
 
 class HistoryList(var reservationList: ArrayList<Reservation>) : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var reservationAdapter: RecyclerReservationAdapter

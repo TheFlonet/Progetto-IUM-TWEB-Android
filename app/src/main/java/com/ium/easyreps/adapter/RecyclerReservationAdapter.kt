@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.ium.easyreps.R
-import com.ium.easyreps.dto.Reservation
+import com.ium.easyreps.model.Reservation
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.State
 

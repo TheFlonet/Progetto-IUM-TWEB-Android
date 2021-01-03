@@ -1,4 +1,4 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.ium.easyreps.R
 
-class Account : Fragment() {
+class About : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var mView: View
 
@@ -24,7 +23,7 @@ class Account : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mView = inflater.inflate(R.layout.fragment_account, container, false)
+        mView = inflater.inflate(R.layout.fragment_about, container, false)
 
         toolbar = mView.findViewById(R.id.appToolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -33,22 +32,10 @@ class Account : Fragment() {
         return mView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        mView.findViewById<Button>(R.id.historyButton).setOnClickListener {
-            findNavController().navigate(R.id.account_to_history)
-        }
-
-        mView.findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            findNavController().navigate(R.id.account_to_login)
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                findNavController().navigate(R.id.account_to_courses)
+                findNavController().navigate(R.id.about_to_home)
                 return true
             }
         }

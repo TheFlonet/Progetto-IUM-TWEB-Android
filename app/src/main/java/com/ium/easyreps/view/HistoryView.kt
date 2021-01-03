@@ -1,4 +1,4 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.os.Bundle
 import android.view.*
@@ -10,8 +10,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.TabHistoryAdapter
-import com.ium.easyreps.adapter.TabLessonsAdapter
-import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.State
 
 class HistoryView : Fragment() {

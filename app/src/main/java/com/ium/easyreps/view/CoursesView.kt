@@ -1,9 +1,10 @@
-package com.ium.easyreps.fragment
+package com.ium.easyreps.view
 
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -11,12 +12,15 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.TabLessonsAdapter
 import com.ium.easyreps.util.Day
+import com.ium.easyreps.viewmodel.UserVM
 
 class CoursesView : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var tabAdapter: TabLessonsAdapter
     private lateinit var tabLayout: TabLayout
     private lateinit var mView: View
+    private val model: UserVM by activityViewModels()
+    private var isLogged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +42,13 @@ class CoursesView : Fragment() {
         return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        model.currentUser.observe(viewLifecycleOwner, {
+            isLogged = it.isLogged
+        })
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
     }
@@ -49,7 +60,7 @@ class CoursesView : Fragment() {
                 return true
             }
             R.id.userItem -> {
-                if (false) // TODO check if user is logged in
+                if (isLogged)
                     findNavController().navigate(R.id.home_to_account)
                 else
                     findNavController().navigate(R.id.home_to_login)
@@ -66,7 +77,8 @@ class CoursesView : Fragment() {
     }
 
     private fun setupTab() {
-        tabAdapter = activity?.let { TabLessonsAdapter(it.supportFragmentManager, this.lifecycle) }!!
+        tabAdapter =
+            activity?.let { TabLessonsAdapter(it.supportFragmentManager, this.lifecycle) }!!
         tabAdapter.initFragments()
         val tabPager = mView.findViewById<ViewPager2?>(R.id.tabViewPager)
         tabPager.adapter = tabAdapter

@@ -1,4 +1,4 @@
-package com.ium.easyreps.dto
+package com.ium.easyreps.model
 
 class Teacher(var id: Int, var name: String, var surname: String) {
     override fun toString(): String {
