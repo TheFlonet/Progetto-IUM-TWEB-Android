@@ -22,7 +22,7 @@
 
     <!--INFO-->
     <string name="about_app">EasyReps is an android application written in kotlin and using the material design components at their latest version.The application is composed of a single Activity in which Fragments are exchanged according to the information to be shown to the user. The Backend relies on Java Servlets to which it sends HTTP requests to receive JSON objects as answer.</string>
-    <string name="made_by">Application made by\nBarraco Christian, Bifulco Mario, Sciuto Samuele</string>
+    <string name="made_by">Application made by\nBarraco Cristian, Bifulco Mario, Sciuto Samuele</string>
 
     <!--MENU-->
     <string name="login">Login</string>
