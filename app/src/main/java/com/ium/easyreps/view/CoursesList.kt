@@ -5,17 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerLessonsAdapter
 import com.ium.easyreps.model.PrivateLesson
+import com.ium.easyreps.viewmodel.UserVM
 
 class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter
     private lateinit var coursesRecycler: RecyclerView
     private lateinit var mView: View
+    private val model: UserVM by activityViewModels()
+    private var isLogged = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,10 +32,14 @@ class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), Swipe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        model.currentUser.observe(viewLifecycleOwner, {
+            isLogged = it.isLogged
+        })
+
         coursesRecycler = view.findViewById(R.id.coursesRecycler)
         val linearLayoutManager = LinearLayoutManager(activity)
         coursesRecycler.layoutManager = linearLayoutManager
-        coursesAdapter = RecyclerLessonsAdapter(coursesList) // TODO creare la lista di corsi come richiesta dal web
+        coursesAdapter = RecyclerLessonsAdapter(coursesList, isLogged)
         coursesRecycler.adapter = coursesAdapter
         coursesRecycler.setHasFixedSize(true)
         setupSwipeRefresh()
@@ -45,7 +53,7 @@ class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), Swipe
     private fun updateData() {
         coursesList.shuffle() // TODO aggiornare veramente la lista
         coursesRecycler.removeAllViews()
-        coursesAdapter = RecyclerLessonsAdapter(coursesList)
+        coursesAdapter = RecyclerLessonsAdapter(coursesList, isLogged)
         coursesRecycler.adapter = coursesAdapter
     }
 

@@ -35,7 +35,7 @@ class HistoryList(var reservationList: ArrayList<Reservation>) : Fragment(), Swi
         reservationRecycler = view.findViewById(R.id.historyRecycler)
         val linearLayoutManager = LinearLayoutManager(activity)
         reservationRecycler.layoutManager = linearLayoutManager
-        reservationAdapter = RecyclerReservationAdapter(reservationList) // TODO creare la lista di corsi come richiesta dal web
+        reservationAdapter = RecyclerReservationAdapter(reservationList)
         reservationRecycler.adapter = reservationAdapter
         reservationRecycler.setHasFixedSize(true)
         setupSwipeRefresh()

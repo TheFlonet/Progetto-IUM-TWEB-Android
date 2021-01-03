@@ -17,7 +17,8 @@ import com.ium.easyreps.util.Day
 import com.ium.easyreps.viewmodel.UserVM
 
 class RecyclerLessonsAdapter(
-    private var lessons: List<PrivateLesson>
+    private var lessons: List<PrivateLesson>,
+    private var isLogged: Boolean
 ) : RecyclerView.Adapter<RecyclerLessonsAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var course: TextView = itemView.findViewById(R.id.courseText)
@@ -40,9 +41,14 @@ class RecyclerLessonsAdapter(
         holder.teacher.text = teacherTxt
         val hourTxt = "${lesson.startAt}-${lesson.startAt + 1}"
         holder.start.text = hourTxt
-        holder.layout.setOnClickListener {
-            showConfirmDialog(it, lesson)
-        }
+        if (isLogged)
+            holder.layout.setOnClickListener {
+                showConfirmDialog(it, lesson)
+            }
+        else
+            holder.layout.setOnClickListener {
+                Toast.makeText(it.context, it.context.getString(R.string.log_to_book), Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun showConfirmDialog(
