@@ -12,7 +12,7 @@ import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerReservationAdapter
 import com.ium.easyreps.model.Reservation
 
-class HistoryList(var reservationList: ArrayList<Reservation>) : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class HistoryList(var reservationList: ArrayList<Reservation>) : Fragment() {
     private lateinit var reservationAdapter: RecyclerReservationAdapter
     private lateinit var reservationRecycler: RecyclerView
     private lateinit var mView: View
@@ -38,29 +38,5 @@ class HistoryList(var reservationList: ArrayList<Reservation>) : Fragment(), Swi
         reservationAdapter = RecyclerReservationAdapter(reservationList)
         reservationRecycler.adapter = reservationAdapter
         reservationRecycler.setHasFixedSize(true)
-        setupSwipeRefresh()
-    }
-
-    override fun onRefresh() {
-        updateData()
-        mView.findViewById<SwipeRefreshLayout>(R.id.historySwipe).isRefreshing = false
-    }
-
-    private fun updateData() {
-        reservationList.shuffle() // TODO aggiornare veramente la lista
-        reservationRecycler.removeAllViews()
-        reservationAdapter = RecyclerReservationAdapter(reservationList)
-        reservationRecycler.adapter = reservationAdapter
-    }
-
-    private fun setupSwipeRefresh() {
-        val swipeContainer = mView.findViewById<SwipeRefreshLayout>(R.id.historySwipe)
-        swipeContainer.setOnRefreshListener(this)
-        swipeContainer.setColorSchemeResources(
-            android.R.color.holo_blue_light,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light
-        )
     }
 }

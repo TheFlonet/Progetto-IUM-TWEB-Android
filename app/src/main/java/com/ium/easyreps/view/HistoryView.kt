@@ -38,8 +38,9 @@ class HistoryView : Fragment() {
     }
 
     private fun setupTab() {
-        tabAdapter = activity?.let { TabHistoryAdapter(it.supportFragmentManager, this.lifecycle) }!!
-        tabAdapter.initFragments()
+        tabAdapter =
+            activity?.let { TabHistoryAdapter(it.supportFragmentManager, this.lifecycle) }!!
+        context?.let { tabAdapter.initFragments(it) }
         val tabPager = mView.findViewById<ViewPager2?>(R.id.tabViewPager)
         tabPager.adapter = tabAdapter
         tabLayout = mView.findViewById(R.id.tabLayout)

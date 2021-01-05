@@ -79,7 +79,7 @@ class CoursesView : Fragment() {
     private fun setupTab() {
         tabAdapter =
             activity?.let { TabLessonsAdapter(it.supportFragmentManager, this.lifecycle) }!!
-        tabAdapter.initFragments()
+        context?.let { tabAdapter.initFragments(it) }
         val tabPager = mView.findViewById<ViewPager2?>(R.id.tabViewPager)
         tabPager.adapter = tabAdapter
         tabLayout = mView.findViewById(R.id.tabLayout)
@@ -92,7 +92,7 @@ class CoursesView : Fragment() {
                     tab.text = Day.TUE.toString()
                 }
                 2 -> {
-                    tab.text = Day.WEN.toString()
+                    tab.text = Day.WED.toString()
                 }
                 3 -> {
                     tab.text = Day.THU.toString()

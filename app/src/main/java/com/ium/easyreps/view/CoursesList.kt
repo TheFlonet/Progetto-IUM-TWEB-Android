@@ -14,7 +14,7 @@ import com.ium.easyreps.adapter.RecyclerLessonsAdapter
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.viewmodel.UserVM
 
-class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment() {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter
     private lateinit var coursesRecycler: RecyclerView
     private lateinit var mView: View
@@ -42,29 +42,5 @@ class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment(), Swipe
         coursesAdapter = RecyclerLessonsAdapter(coursesList, isLogged)
         coursesRecycler.adapter = coursesAdapter
         coursesRecycler.setHasFixedSize(true)
-        setupSwipeRefresh()
-    }
-
-    override fun onRefresh() {
-        updateData()
-        mView.findViewById<SwipeRefreshLayout>(R.id.coursesSwipe).isRefreshing = false
-    }
-
-    private fun updateData() {
-        coursesList.shuffle() // TODO aggiornare veramente la lista
-        coursesRecycler.removeAllViews()
-        coursesAdapter = RecyclerLessonsAdapter(coursesList, isLogged)
-        coursesRecycler.adapter = coursesAdapter
-    }
-
-    private fun setupSwipeRefresh() {
-        val swipeContainer = mView.findViewById<SwipeRefreshLayout>(R.id.coursesSwipe)
-        swipeContainer.setOnRefreshListener(this)
-        swipeContainer.setColorSchemeResources(
-            android.R.color.holo_blue_light,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light
-        )
     }
 }

@@ -59,4 +59,6 @@
     <string name="no_connectivity">No internet connection, check your connectivity and try again</string>
     <string name="no_connection_error">No connection available</string>
     <string name="log_to_book">Log to book a lesson</string>
+    <string name="error_logging_in">Error while logging in</string>
+    <string name="error_getting_courses">Error while getting courses list</string>
 </resources>

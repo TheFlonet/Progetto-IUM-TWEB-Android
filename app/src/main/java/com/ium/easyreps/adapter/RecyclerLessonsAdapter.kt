@@ -55,26 +55,19 @@ class RecyclerLessonsAdapter(
         view: View,
         lesson: PrivateLesson
     ) {
-        val dayName = when (lesson.day) {
-            Day.MON -> view.context.getString(R.string.monday)
-            Day.TUE -> view.context.getString(R.string.tuesday)
-            Day.WEN -> view.context.getString(R.string.wednesday)
-            Day.THU -> view.context.getString(R.string.thursday)
-            Day.FRI -> view.context.getString(R.string.friday)
-        }
-
         AlertDialog.Builder(view.context).setTitle(view.context.getString(R.string.confirm_booking))
             .setMessage(
                 view.context.getString(
                     R.string.dialog_message,
                     lesson.course.name,
                     lesson.teacher.surname,
-                    dayName,
+                    Day.getDayName(lesson.day),
                     lesson.startAt
                 )
             )
             .setPositiveButton(view.context.getString(R.string.confirm)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
+                // TODO send request to server
                 Toast.makeText(
                     view.context,
                     view.context.getString(R.string.book_confirmation),

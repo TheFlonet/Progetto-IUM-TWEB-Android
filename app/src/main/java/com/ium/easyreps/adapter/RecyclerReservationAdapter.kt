@@ -38,14 +38,7 @@ class RecyclerReservationAdapter(private var reservationList: List<Reservation>)
         holder.teacher.text = teacherTxt
         val hourTxt = "${reservation.startAt}-${reservation.startAt + 1}"
         holder.start.text = hourTxt
-        val dayName = when (reservation.day) {
-            Day.MON -> "Monday"
-            Day.TUE -> "Tuesday"
-            Day.WEN -> "Wednesday"
-            Day.THU -> "Thursday"
-            Day.FRI -> "Friday"
-        }
-        holder.day.text = dayName
+        holder.day.text = Day.getDayName(reservation.day)
         holder.layout.setOnClickListener {
             if (reservation.state == State.ACTIVE)
                 showConfirmDialog(it, reservation)
@@ -53,26 +46,19 @@ class RecyclerReservationAdapter(private var reservationList: List<Reservation>)
     }
 
     private fun showConfirmDialog(view: View, reservation: Reservation) {
-        val dayName = when (reservation.day) {
-            Day.MON -> view.context.getString(R.string.monday)
-            Day.TUE -> view.context.getString(R.string.tuesday)
-            Day.WEN -> view.context.getString(R.string.wednesday)
-            Day.THU -> view.context.getString(R.string.thursday)
-            Day.FRI -> view.context.getString(R.string.friday)
-        }
-
         AlertDialog.Builder(view.context).setTitle(view.context.getString(R.string.discard_reservation))
             .setMessage(
                 view.context.getString(
                     R.string.discard_message,
                     reservation.course.name,
                     reservation.teacher.surname,
-                    dayName,
+                    Day.getDayName(reservation.day),
                     reservation.startAt
                 )
             )
             .setPositiveButton(view.context.getString(R.string.discard)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
+                // TODO send request to server
                 Toast.makeText(
                     view.context,
                     view.context.getString(R.string.discard_confirmation),
