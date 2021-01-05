@@ -14,10 +14,9 @@ import com.ium.easyreps.config.Config
 import com.ium.easyreps.model.Course
 import com.ium.easyreps.model.Reservation
 import com.ium.easyreps.model.Teacher
-import com.ium.easyreps.model.User
-import com.ium.easyreps.view.HistoryList
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.State
+import com.ium.easyreps.view.HistoryList
 import org.json.JSONObject
 
 class TabHistoryAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

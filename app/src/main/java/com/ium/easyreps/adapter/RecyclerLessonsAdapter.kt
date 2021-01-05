@@ -8,13 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.ium.easyreps.R
 import com.ium.easyreps.model.PrivateLesson
-import com.ium.easyreps.model.User
 import com.ium.easyreps.util.Day
-import com.ium.easyreps.viewmodel.UserVM
 
 class RecyclerLessonsAdapter(
     private var lessons: List<PrivateLesson>,
