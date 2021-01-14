@@ -1,5 +1,6 @@
 package com.ium.easyreps.adapter
 
+import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +9,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
 import com.ium.easyreps.model.PrivateLesson
+import com.ium.easyreps.util.Config
 import com.ium.easyreps.util.Day
+import com.ium.easyreps.util.NetworkUtil
+import com.ium.easyreps.viewmodel.UserVM
 
 class RecyclerLessonsAdapter(
     private var lessons: List<PrivateLesson>,
-    private var isLogged: Boolean
+    private var isLogged: Boolean,
+    private var username: String
 ) : RecyclerView.Adapter<RecyclerLessonsAdapter.ViewHolder>() {
+    private var canBook = false
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var course: TextView = itemView.findViewById(R.id.courseText)
         var teacher: TextView = itemView.findViewById(R.id.teacherText)
@@ -44,7 +55,11 @@ class RecyclerLessonsAdapter(
             }
         else
             holder.layout.setOnClickListener {
-                Toast.makeText(it.context, it.context.getString(R.string.log_to_book), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    it.context,
+                    it.context.getString(R.string.log_to_book),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
@@ -64,16 +79,49 @@ class RecyclerLessonsAdapter(
             )
             .setPositiveButton(view.context.getString(R.string.confirm)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
-                // TODO send request to server
-                Toast.makeText(
-                    view.context,
-                    view.context.getString(R.string.book_confirmation),
-                    Toast.LENGTH_LONG
-                ).show()
+                bookRequest(view.context, lesson)
+                if (canBook) {
+                    canBook = false
+                    Toast.makeText(
+                        view.context,
+                        view.context.getString(R.string.book_confirmation),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        view.context,
+                        view.context.getString(R.string.error_booking),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
             .setNegativeButton(view.context.getString(R.string.abort)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
             }.create().show()
+    }
+
+    private fun bookRequest(context: Context, lesson: PrivateLesson) {
+        if (NetworkUtil.checkConnection(context)) {
+            val cancelRequest = JsonObjectRequest(
+                Request.Method.POST,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.book}&username=${username}&idCorso=${lesson.course.id}&idDocente=${lesson.teacher.id}&ora=${lesson.startAt}&day=${lesson.day.toIta()}",
+                null,
+                {
+                    canBook = true
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_booking),
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
+
+            Volley.newRequestQueue(context).add(cancelRequest)
+        } else {
+            Toast.makeText(context, context.getString(R.string.no_connectivity), Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     override fun getItemCount(): Int {

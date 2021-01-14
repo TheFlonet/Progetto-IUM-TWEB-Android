@@ -61,4 +61,8 @@
     <string name="log_to_book">Log to book a lesson</string>
     <string name="error_logging_in">Error while logging in</string>
     <string name="error_getting_courses">Error while getting courses list</string>
+    <string name="error_logout">Error while logging out</string>
+    <string name="error_booking">Error while booking a lesson</string>
+    <string name="error_cancel">Error during reservation cancelling</string>
+    <string name="error_discard">Error in discarding reservation</string>
 </resources>

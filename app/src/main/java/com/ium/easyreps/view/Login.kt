@@ -1,8 +1,5 @@
 package com.ium.easyreps.view
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -21,7 +18,8 @@ import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.ium.easyreps.R
-import com.ium.easyreps.config.Config
+import com.ium.easyreps.util.Config
+import com.ium.easyreps.util.NetworkUtil
 import com.ium.easyreps.viewmodel.UserVM
 
 class Login : Fragment() {
@@ -82,7 +80,7 @@ class Login : Fragment() {
     private fun loginRequest(username: String, password: String) {
         val userRequest = JsonObjectRequest(
             Request.Method.GET,
-            "${Config.getInstance().ip}:${Config.getInstance().port}/${Config.getInstance().servletLogin}?nome=$username&password=$password",
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
             null,
             {
                 val logged = it.getBoolean("isLogged")
@@ -93,7 +91,8 @@ class Login : Fragment() {
                 }
             },
             {
-                Toast.makeText(context, getString(R.string.error_logging_in), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getString(R.string.error_logging_in), Toast.LENGTH_LONG)
+                    .show()
             })
 
         Volley.newRequestQueue(context).add(userRequest)
@@ -139,14 +138,7 @@ class Login : Fragment() {
     private fun isPhoneConnected(): Boolean {
         val usernameField = mView.findViewById<TextInputLayout>(R.id.usernameTextInput)
         val passwordField = mView.findViewById<TextInputLayout>(R.id.passwordTextInput)
-        val connectivityManager =
-            context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-        val isConnected =
-            networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true ||
-                    networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true ||
-                    networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+        val isConnected = NetworkUtil.checkConnection(context)
 
         if (!isConnected) {
             Snackbar.make(mView, getString(R.string.no_connectivity), Snackbar.LENGTH_LONG).show()

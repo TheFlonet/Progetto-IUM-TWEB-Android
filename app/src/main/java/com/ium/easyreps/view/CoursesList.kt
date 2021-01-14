@@ -38,7 +38,8 @@ class CoursesList(var coursesList: ArrayList<PrivateLesson>) : Fragment() {
         coursesRecycler = view.findViewById(R.id.coursesRecycler)
         val linearLayoutManager = LinearLayoutManager(activity)
         coursesRecycler.layoutManager = linearLayoutManager
-        coursesAdapter = RecyclerLessonsAdapter(coursesList, isLogged)
+        coursesAdapter =
+            model.currentUser.value?.name?.let { RecyclerLessonsAdapter(coursesList, isLogged, it) }!!
         coursesRecycler.adapter = coursesAdapter
         coursesRecycler.setHasFixedSize(true)
     }

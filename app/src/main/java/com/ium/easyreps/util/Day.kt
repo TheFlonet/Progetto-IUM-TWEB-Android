@@ -3,6 +3,16 @@ package com.ium.easyreps.util
 enum class Day {
     MON, TUE, WED, THU, FRI;
 
+    fun toIta(): String {
+        return when (this) {
+            MON -> "Lun"
+            TUE -> "Mar"
+            WED -> "Mer"
+            THU -> "Gio"
+            FRI -> "Ven"
+        }
+    }
+
     companion object {
         fun getDay(i: Int): Day {
             return when (i) {

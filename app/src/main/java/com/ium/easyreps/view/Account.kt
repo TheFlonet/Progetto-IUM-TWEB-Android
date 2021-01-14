@@ -6,14 +6,24 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
+import com.ium.easyreps.model.User
+import com.ium.easyreps.util.Config
+import com.ium.easyreps.util.NetworkUtil
+import com.ium.easyreps.viewmodel.UserVM
 
 class Account : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var mView: View
+    private val model: UserVM by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +51,26 @@ class Account : Fragment() {
         }
 
         mView.findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            findNavController().navigate(R.id.account_to_login)
+            logoutRequest()
+            if (model.currentUser.value?.isLogged == false)
+                findNavController().navigate(R.id.account_to_login)
+        }
+    }
+
+    private fun logoutRequest() {
+        if (NetworkUtil.checkConnection(context)) {
+            val logout = JsonObjectRequest(
+                Request.Method.GET,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.logout}",
+                null,
+                { model.currentUser.value = User() },
+                {
+                    Toast.makeText(context, getString(R.string.error_logout), Toast.LENGTH_LONG)
+                        .show()
+                })
+            Volley.newRequestQueue(context).add(logout)
+        } else {
+            Toast.makeText(context, getString(R.string.no_connectivity), Toast.LENGTH_LONG).show()
         }
     }
 

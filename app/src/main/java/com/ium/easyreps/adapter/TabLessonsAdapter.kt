@@ -10,7 +10,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
-import com.ium.easyreps.config.Config
+import com.ium.easyreps.util.Config
 import com.ium.easyreps.model.Course
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.model.Teacher
@@ -33,9 +33,10 @@ class TabLessonsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) 
     fun initFragments(context: Context) {
         fragments = ArrayList(5)
 
+        // TODO controllare come ottenere i corsi e fare il parsing
         val coursesArray = JsonArrayRequest(
             Request.Method.GET,
-            "${Config.getInstance().ip}:${Config.getInstance().port}/${Config.getInstance().servletCourses}",
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=",
             null, {
                 // days
                 for (i in (0 until it.length())) {

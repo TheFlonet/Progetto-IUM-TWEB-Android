@@ -10,7 +10,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
-import com.ium.easyreps.config.Config
+import com.ium.easyreps.util.Config
 import com.ium.easyreps.model.Course
 import com.ium.easyreps.model.Reservation
 import com.ium.easyreps.model.Teacher
@@ -34,9 +34,10 @@ class TabHistoryAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) 
     fun initFragments(context: Context) {
         fragments = ArrayList(3)
 
+        // TODO controllare parsing prenotazioni
         val coursesArray = JsonArrayRequest(
             Request.Method.GET,
-            "${Config.getInstance().ip}:${Config.getInstance().port}/${Config.getInstance().servletReservation}",
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}",
             null, {
                 for (i in (0 until it.length())) {
                     val bookedLessons = it.getJSONArray(i)
