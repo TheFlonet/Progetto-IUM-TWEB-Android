@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.TabLessonsAdapter
+import com.ium.easyreps.model.User
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.viewmodel.UserVM
 
@@ -19,7 +20,6 @@ class CoursesView : Fragment() {
     private lateinit var tabAdapter: TabLessonsAdapter
     private lateinit var tabLayout: TabLayout
     private lateinit var mView: View
-    private val model: UserVM by activityViewModels()
     private var isLogged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,6 @@ class CoursesView : Fragment() {
     ): View {
         mView = inflater.inflate(R.layout.fragment_courses_view, container, false) as View
 
-
         toolbar = mView.findViewById(R.id.appToolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -44,7 +43,7 @@ class CoursesView : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.currentUser.observe(viewLifecycleOwner, {
+        UserVM.user.observe(viewLifecycleOwner, {
             isLogged = it.isLogged
         })
     }
@@ -78,7 +77,11 @@ class CoursesView : Fragment() {
 
     private fun setupTab() {
         tabAdapter =
-            activity?.let { TabLessonsAdapter(it.supportFragmentManager, this.lifecycle) }!!
+            activity?.let {
+                TabLessonsAdapter(
+                    it.supportFragmentManager, this.lifecycle
+                )
+            }!!
         context?.let { tabAdapter.initFragments(it) }
         val tabPager = mView.findViewById<ViewPager2?>(R.id.tabViewPager)
         tabPager.adapter = tabAdapter

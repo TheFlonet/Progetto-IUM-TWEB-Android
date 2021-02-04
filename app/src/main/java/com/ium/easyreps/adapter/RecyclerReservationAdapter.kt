@@ -66,6 +66,7 @@ class RecyclerReservationAdapter(private var reservationList: List<Reservation>)
             )
             .setPositiveButton(view.context.getString(R.string.discard)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
+                // TODO disdire prenotazione
                 cancelRequest(view.context, reservation.id)
                 if (canCancel) {
                     canCancel = false

@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -20,12 +19,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.ium.easyreps.R
 import com.ium.easyreps.util.Config
 import com.ium.easyreps.util.NetworkUtil
+import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.viewmodel.UserVM
 
 class Login : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var mView: View
-    private val model: UserVM by activityViewModels()
+    var user = UserVM.user.value
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,66 +48,36 @@ class Login : Fragment() {
             val password =
                 mView.findViewById<AppCompatEditText>(R.id.passwordEditTxt).text.toString()
 
-            if (canLog(username.trim(), password.trim())) {
-                findNavController().navigate(R.id.login_to_account)
-            }
+            canLog(username.trim(), password.trim())
         }
 
         return mView
     }
 
-    private fun canLog(username: String, password: String): Boolean {
+    private fun canLog(username: String, password: String) {
         val usernameField = mView.findViewById<TextInputLayout>(R.id.usernameTextInput)
         val passwordField = mView.findViewById<TextInputLayout>(R.id.passwordTextInput)
         usernameField.isErrorEnabled = false
         passwordField.isErrorEnabled = false
 
-        if (!areInputValid(username, password)) return false
-        if (!isPhoneConnected()) return false
+        areInputValid(username, password)
+        isPhoneConnected()
 
-        loginRequest(username, password)
-        if (model.currentUser.value?.isLogged == false) {
-            usernameField.isErrorEnabled = true
-            usernameField.error = getString(R.string.wrong_credential)
-            passwordField.isErrorEnabled = true
-            passwordField.error = getString(R.string.wrong_credential)
-            return false
-        }
-
-        return true
-    }
-
-    private fun loginRequest(username: String, password: String) {
-        val userRequest = JsonObjectRequest(
-            Request.Method.GET,
-            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
-            null,
-            {
-                val logged = it.getBoolean("isLogged")
-                if (logged) {
-                    model.currentUser.value?.isLogged = logged
-                    model.currentUser.value?.name = username
-                    model.currentUser.value?.password = password
+        context?.let {
+            ServerRequest.login(it, username, password) {
+                if (user?.isLogged == true)
+                    findNavController().navigate(R.id.login_to_account)
+                else {
+                    usernameField.isErrorEnabled = true
+                    usernameField.error = getString(R.string.wrong_credential)
+                    passwordField.isErrorEnabled = true
+                    passwordField.error = getString(R.string.wrong_credential)
                 }
-            },
-            {
-                Toast.makeText(context, getString(R.string.error_logging_in), Toast.LENGTH_LONG)
-                    .show()
-            })
-
-        Volley.newRequestQueue(context).add(userRequest)
+            }
+        }
     }
 
     private fun areInputValid(username: String, password: String): Boolean {
-        val passwordPattern = ("^" +
-                "(?=.*[0-9])" +         //at least 1 digit
-                "(?=.*[a-z])" +         //at least 1 lower case letter
-                "(?=.*[A-Z])" +         //at least 1 upper case letter
-                "(?=.*[a-zA-Z])" +      //any letter
-                "(?=.*[@#$%^&+=])" +    //at least 1 special character
-                "(?=\\S+$)" +           //no white spaces
-                ".{6,}" +               //at least 4 characters
-                "$").toRegex()
         val usernameField = mView.findViewById<TextInputLayout>(R.id.usernameTextInput)
         val passwordField = mView.findViewById<TextInputLayout>(R.id.passwordTextInput)
 
@@ -126,7 +96,7 @@ class Login : Fragment() {
             passwordField.error = getString(R.string.password_null_error)
             return false
         }
-        if (!password.matches(passwordPattern)) {
+        if (!username.all { it.isLetterOrDigit() } /*!password.matches(passwordPattern)*/) {
             passwordField.isErrorEnabled = true
             passwordField.error = getString(R.string.password_invalid_error)
             return false
