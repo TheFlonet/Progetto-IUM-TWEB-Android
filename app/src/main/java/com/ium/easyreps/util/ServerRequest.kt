@@ -1,10 +1,17 @@
 package com.ium.easyreps.util
 
+import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
-import com.android.volley.*
-import com.android.volley.toolbox.*
+import androidx.preference.PreferenceManager
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.JsonObject
 import com.ium.easyreps.R
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.model.User
@@ -12,61 +19,45 @@ import com.ium.easyreps.view.CoursesList
 import com.ium.easyreps.view.HistoryList
 import com.ium.easyreps.viewmodel.UserVM
 import org.json.JSONObject
-import java.io.UnsupportedEncodingException
-import java.net.CookieManager
 
 
 object ServerRequest {
     var queue: RequestQueue? = null
+    private const val setCookieKey = "Set-Cookie"
+    private const val cookieKey = "Cookie"
+    private const val sessionCookie = "sessionid"
+    private var preferences: SharedPreferences? = null
 
     fun login(context: Context, username: String, password: String, callback: () -> Unit) {
-        initQueue(context)
-        queue!!.add(JsonObjectRequest(
-            Request.Method.GET,
-            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
-            null,
-            {
-                UserVM.user.value?.isLogged = it.getBoolean("loggedIn")
-                if (UserVM.user.value?.isLogged == true) {
-                    UserVM.user.value?.name = it.getString("username")
-                    UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
-                    UserVM.user.value?.password = password
-                }
-                callback()
-            }, {})
+        init(context)
+        queue!!.add(
+            CustomRequest(
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
+                JsonObject::class.java,
+                {
+                    UserVM.user.value?.isLogged = it["loggedIn"].asBoolean
+                    if (UserVM.user.value?.isLogged == true) {
+                        UserVM.user.value?.name = it["username"].asString
+                        UserVM.user.value?.isAdmin = it["isAdmin"].asBoolean
+                        UserVM.user.value?.password = password
+                    }
+
+                    callback()
+                },
+                {}
+            )
         )
     }
 
-    private fun initQueue(context: Context) {
-        var request = JsonArrayRequest(Request.Method.GET, "", {}, {}, {})
-        val getRequest: StringRequest = object : StringRequest(
-            Method.GET, "",
-            Response.Listener { val x: String = CookieManager().getCookieValue() },
-            Response.ErrorListener { error ->
-                Log.d("ERROR", "Error => $error")
-            }
-        ) {
-            override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
-                return try {
-                    val jsonString =
-                        String(response.data, HttpHeaderParser.parseCharset(response.headers))
-                    val headerResponse = response.headers.values.toString()
-                    val index1 = headerResponse.indexOf("PHPSESSID=")
-                    val index2 = headerResponse.indexOf("; path")
-                    var sessionId = headerResponse.substring(index1, index2)
-                    Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response))
-                } catch (e: UnsupportedEncodingException) {
-                    Response.error(ParseError(e))
-                }
-            }
-        }
-        if (queue == null) {
+    private fun init(context: Context) {
+        if (queue == null)
             queue = Volley.newRequestQueue(context)
-        }
+        if (preferences == null) preferences =
+            PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     fun logout(context: Context, callback: () -> Unit) {
-        initQueue(context)
+        init(context)
         queue!!.add(
             JsonObjectRequest(
                 Request.Method.GET,
@@ -87,7 +78,7 @@ object ServerRequest {
         context: Context,
         fragments: List<CoursesList>
     ) {
-        initQueue(context)
+        init(context)
         queue!!.add(JsonObjectRequest(
             Request.Method.GET,
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getPrivateLessons}",
@@ -104,7 +95,7 @@ object ServerRequest {
     }
 
     private fun removeBookedCourses(context: Context, fragments: List<CoursesList>) {
-        initQueue(context)
+        init(context)
         queue!!.add(
             JsonArrayRequest(
                 Request.Method.GET,
@@ -147,7 +138,22 @@ object ServerRequest {
     }
 
     fun getHistory(context: Context, fragments: ArrayList<HistoryList>) {
-        checkSession(context) {
+        init(context)
+        queue!!.add(
+            CustomRequest(
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}",
+                JsonObject::class.java,
+                {
+                    Log.d("SUCCESSO_HISTORY", it.toString())
+                },
+                {
+                    Log.d("FALLITO_HISTORY", it.toString())
+                    //header["Cookie"]?.let { it1 -> Log.d("PROVA", it1) }
+                }
+            )
+        )
+
+        /*checkSession(context) {
             // TODO controllare parsing prenotazioni e capire come mai mi considera non loggato
             initQueue(context)
             queue!!.add(
@@ -171,33 +177,41 @@ object ServerRequest {
                         ).show()
                     })
             )
-        }
+        }*/
     }
 
-    private fun checkSession(context: Context, callback: () -> Unit) {
-        initQueue(context)
-        queue!!.add(
-            JsonObjectRequest(
-                Request.Method.GET,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.checkSession}&username=${UserVM.user.value?.name}&isAdmin=${UserVM.user.value?.isAdmin}",
-                null,
-                {
-                    if (!it.getBoolean("isLogged"))
-                        UserVM.user.value?.name?.let { name ->
-                            UserVM.user.value?.password?.let { password ->
-                                login(
-                                    context,
-                                    name, password, callback
-                                )
-                            }
-                        }
-                },
-                {
-                    Toast.makeText(
-                        context, context.getString(R.string.error_getting_courses),
-                        Toast.LENGTH_LONG
-                    ).show()
-                })
-        )
+    fun checkSessionCookie(headers: Map<String?, String>) {
+        if (headers.containsKey(setCookieKey)
+            && headers[setCookieKey]!!.startsWith(sessionCookie)
+        ) {
+            var cookie = headers[setCookieKey]
+            if (cookie!!.isNotEmpty()) {
+                val splitCookie = cookie.split(";".toRegex()).toTypedArray()
+                val splitSessionId = splitCookie[0].split("=".toRegex()).toTypedArray()
+                cookie = splitSessionId[1]
+                val prefEditor: SharedPreferences.Editor = preferences!!.edit()
+                prefEditor.putString(sessionCookie, cookie)
+                prefEditor.apply()
+
+                Log.d("PREFERENZE", preferences.toString())
+            }
+            Log.d("PREFERENZE_FUORI_1", preferences.toString())
+        }
+        Log.d("PREFERENZE_FUORI_2", preferences.toString())
+    }
+
+    fun addSessionCookie(headers: MutableMap<String?, String?>) {
+        val sessionId: String = preferences!!.getString(sessionCookie, "")!!
+        if (sessionId.isNotEmpty()) {
+            val builder = StringBuilder()
+            builder.append(sessionCookie)
+            builder.append("=")
+            builder.append(sessionId)
+            if (headers.containsKey(cookieKey)) {
+                builder.append("; ")
+                builder.append(headers[cookieKey])
+            }
+            headers[cookieKey] = builder.toString()
+        }
     }
 }
