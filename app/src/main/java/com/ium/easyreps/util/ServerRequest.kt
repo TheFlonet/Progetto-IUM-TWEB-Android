@@ -1,6 +1,5 @@
 package com.ium.easyreps.util
 
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -30,11 +29,14 @@ object ServerRequest {
 
     fun login(context: Context, username: String, password: String, callback: () -> Unit) {
         init(context)
+        val url = "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password"
         queue!!.add(
             CustomRequest(
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
                 JsonObject::class.java,
                 {
+                    Log.d("TEST", url)
+                    Log.d("TEST", it.toString())
                     UserVM.user.value?.isLogged = it["loggedIn"].asBoolean
                     if (UserVM.user.value?.isLogged == true) {
                         UserVM.user.value?.name = it["username"].asString
@@ -139,15 +141,17 @@ object ServerRequest {
 
     fun getHistory(context: Context, fragments: ArrayList<HistoryList>) {
         init(context)
+        val url = "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}"
         queue!!.add(
             CustomRequest(
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}",
+                url,
                 JsonObject::class.java,
                 {
                     Log.d("SUCCESSO_HISTORY", it.toString())
                 },
                 {
-                    Log.d("FALLITO_HISTORY", it.toString())
+                    Log.d("HISTORY_FAIL", url)
+                    Log.d("HISTORY_FAIL", it.stackTraceToString())
                     //header["Cookie"]?.let { it1 -> Log.d("PROVA", it1) }
                 }
             )
