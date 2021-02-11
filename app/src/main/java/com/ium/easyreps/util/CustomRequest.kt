@@ -27,7 +27,7 @@ class CustomRequest<T>(
             headers = HashMap()
         }
 
-        ServerRequest.addSessionCookie(headers)
+        //ServerRequest.addSessionCookie(headers)
 
         return headers
     }
@@ -44,7 +44,7 @@ class CustomRequest<T>(
 
         if (response != null) {
             Log.d("PARSE", "entro if")
-            ServerRequest.checkSessionCookie(response.headers)
+            //ServerRequest.checkSessionCookie(response.headers)
         }
 
         /*mHeaders?.putIfAbsent(
