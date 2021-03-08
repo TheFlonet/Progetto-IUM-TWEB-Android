@@ -12,4 +12,5 @@ object Config {
     const val getPrivateLessons = "getdocenze" //ottiene tutti i corsi (per visualizzare schermata inizio getdocenze - stampaprenotazioniattive)
     const val cancel = "disdireprenotazione"
     const val book = "effettuareprenotazione"
+    lateinit var session: String
 }

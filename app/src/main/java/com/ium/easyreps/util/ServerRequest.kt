@@ -10,17 +10,11 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.JsonObject
 import com.ium.easyreps.R
-import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.model.User
-import com.ium.easyreps.view.HistoryList
-import com.ium.easyreps.viewmodel.CoursesVM
-import com.ium.easyreps.viewmodel.Session
 import com.ium.easyreps.viewmodel.UserVM
 import com.squareup.okhttp.*
 import org.json.JSONArray
-import org.json.JSONObject
 
 object ServerRequest {
     var queue: RequestQueue? = null
@@ -40,7 +34,7 @@ object ServerRequest {
                         UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
                         UserVM.user.value?.password = password
                     }
-                    Session.session.value = it.getString("SessionID")
+                    Config.session = it.getString("SessionID")
 
                     callback()
                 },
@@ -141,7 +135,7 @@ object ServerRequest {
     fun getHistory(context: Context) {
         init(context)
         val url =
-            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}&Session=${Session.session.value}"
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}&Session=${Config.session}"
         queue!!.add(
             JsonArrayRequest(
                 Request.Method.GET,
@@ -150,5 +144,6 @@ object ServerRequest {
                 { Log.d("SERVER_SUCCESS", it.toString()) },
                 { Log.d("SERVER_FAIL", it.toString()) })
         )
+        Log.d("SERVER", Config.session)
     }
 }
