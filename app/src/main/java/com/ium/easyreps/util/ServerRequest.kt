@@ -10,65 +10,26 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.ium.easyreps.R
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.model.User
-import com.ium.easyreps.view.CoursesList
 import com.ium.easyreps.view.HistoryList
+import com.ium.easyreps.viewmodel.CoursesVM
+import com.ium.easyreps.viewmodel.Session
 import com.ium.easyreps.viewmodel.UserVM
 import com.squareup.okhttp.*
+import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
-
 
 object ServerRequest {
     var queue: RequestQueue? = null
     var client: OkHttpClient? = null
-    private var mHeader: Headers? = null
-    private const val setCookieKey = "Set-Cookie"
-    private const val cookieKey = "Cookie"
-    private const val sessionCookie = "sessionid"
     private var preferences: SharedPreferences? = null
 
     fun login(context: Context, username: String, password: String, callback: () -> Unit) {
         init(context)
-        val urlBuilder =
-            HttpUrl.parse("${Config.ip}:${Config.port}/${Config.servlet}")
-                .newBuilder()
-        urlBuilder.addQueryParameter("action", Config.login)
-        urlBuilder.addQueryParameter("nome", username)
-        urlBuilder.addQueryParameter("password", password)
-        val url = urlBuilder.build().toString()
-        val request = com.squareup.okhttp.Request.Builder().url(url).build()
-
-        client!!.newCall(request).enqueue(object : Callback {
-            override fun onFailure(request: com.squareup.okhttp.Request?, e: IOException?) {
-                e!!.printStackTrace()
-            }
-
-            override fun onResponse(response: Response?) {
-                /*Log.d("HISTORY", response.toString())
-                for ((name, value) in response!!.headers().toMultimap()) {
-                    Log.d("HISTORY_TEST", "$name: $value")
-                }*/
-                mHeader = response!!.headers()
-                val jsonResponse = Gson().fromJson(response.body().string(), JsonObject::class.java)
-
-
-                UserVM.user.value?.isLogged = jsonResponse["loggedIn"].asBoolean // it.getBoolean("loggedIn")
-                if (UserVM.user.value?.isLogged == true) {
-                    UserVM.user.value?.name = jsonResponse["username"].asString //it.getString("username")
-                    UserVM.user.value?.isAdmin = jsonResponse["isAdmin"].asBoolean //it.getBoolean("isAdmin")
-                    UserVM.user.value?.password = password
-                }
-
-                callback()
-            }
-
-        })
-        /*queue!!.add(
+        queue!!.add(
             JsonObjectRequest(Request.Method.GET,
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
                 null,
@@ -79,31 +40,16 @@ object ServerRequest {
                         UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
                         UserVM.user.value?.password = password
                     }
+                    Session.session.value = it.getString("SessionID")
 
                     callback()
                 },
                 {})
-            /*CustomRequest(
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
-                JsonObject::class.java,
-                {
-                    UserVM.user.value?.isLogged = it["loggedIn"].asBoolean
-                    if (UserVM.user.value?.isLogged == true) {
-                        UserVM.user.value?.name = it["username"].asString
-                        UserVM.user.value?.isAdmin = it["isAdmin"].asBoolean
-                        UserVM.user.value?.password = password
-                    }
-
-                    callback()
-                },
-                {}
-            )*/
-        )*/
+        )
     }
 
     private fun init(context: Context) {
         if (queue == null) {
-            Log.d("INIT", "fuck")
             queue = Volley.newRequestQueue(context)
         }
         if (client == null) {
@@ -131,24 +77,25 @@ object ServerRequest {
         )
     }
 
-    fun getCourses(context: Context, fragments: List<CoursesList>) {
+    fun getCourses(context: Context) {
         init(context)
-        queue!!.add(JsonObjectRequest(
+        queue!!.add(JsonArrayRequest(
             Request.Method.GET,
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getPrivateLessons}",
             null, {
-                createFragments(it, fragments)
-                removeBookedCourses(context, fragments)
+                createFragments(it)
+                removeBookedCourses(context)
             }, {
                 Toast.makeText(
                     context, context.getString(R.string.error_getting_courses),
                     Toast.LENGTH_LONG
                 ).show()
+                Log.d("SERVER", it.toString())
             })
         )
     }
 
-    private fun removeBookedCourses(context: Context, fragments: List<CoursesList>) {
+    private fun removeBookedCourses(context: Context) {
         init(context)
         queue!!.add(
             JsonArrayRequest(
@@ -156,12 +103,12 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getActiveReservations}",
                 null,
                 {
-                    for ((i, fragment) in fragments.withIndex()) {
+                    /*for ((i, fragment) in fragments.withIndex()) {
                         val coursesOfTheDay = it.getJSONObject(i)
-                        for (course in fragment.coursesList!!) {
+                        for (course in CoursesVM.courses.value!!) {
                             // TODO creare esempio da sottrarre
                         }
-                    }
+                    }*/
 
                 },
                 {
@@ -173,8 +120,8 @@ object ServerRequest {
         )
     }
 
-    private fun createFragments(webResponse: JSONObject?, fragments: List<CoursesList>) {
-        for (i in (0 until 5)) {
+    private fun createFragments(webResponse: JSONArray?) {
+        /*for (i in (0 until 5)) {
             val courses = ArrayList<PrivateLesson>()
             for (j in (15 until 19))
                 if (webResponse?.keys() != null)
@@ -187,135 +134,21 @@ object ServerRequest {
                                     Day.getDay(i), j
                                 )
                             )
-            fragments[i].coursesList = courses
-        }
+            CoursesVM.courses.value!![i].addAll(courses)
+        }*/
     }
 
-    fun getHistory(context: Context, fragments: ArrayList<HistoryList>) {
+    fun getHistory(context: Context) {
         init(context)
-        val urlBuilder =
-            HttpUrl.parse("${Config.ip}:${Config.port}/${Config.servlet}")
-                .newBuilder()
-        urlBuilder.addQueryParameter("action", Config.getReservations)
-        urlBuilder.addQueryParameter("utente", UserVM.user.value!!.name)
-        val url = urlBuilder.build().toString()
-        val request = com.squareup.okhttp.Request.Builder().url(url)
-        for ((key, value) in mHeader!!.toMultimap())
-            request.addHeader(key, value.toString())
-
-        client!!.newCall(request.build()).enqueue(object : Callback {
-            override fun onFailure(request: com.squareup.okhttp.Request?, e: IOException?) {
-                e!!.printStackTrace()
-            }
-
-            override fun onResponse(response: Response?) {
-                Log.d("HISTORY", response!!.body().string())
-                Log.d("HISTORY", response.toString())
-            }
-
-        })
-        /*login(context, UserVM.user.value!!.name, UserVM.user.value!!.password) {
-            init(context)
-            queue!!.add(
-                JsonObjectRequest(
-                    Request.Method.GET,
-                    "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}",
-                    null,
-                    { Log.d("HISTORY_SUCCESS", it.toString()) },
-                    { Log.d("HISTORY_FAIL", it.stackTraceToString()) })
-            )*/
-        /*val url =
-            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}"
+        val url =
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}&Session=${Session.session.value}"
         queue!!.add(
-            CustomRequest(
+            JsonArrayRequest(
+                Request.Method.GET,
                 url,
-                JsonObject::class.java,
-                {
-                    Log.d("HISTORY_SUCCESS", it.toString())
-                },
-                {
-                    Log.d("HISTORY_FAIL", url)
-                    Log.d("HISTORY_FAIL", it.stackTraceToString())
-                    //header["Cookie"]?.let { it1 -> Log.d("PROVA", it1) }
-                }
-            )
-        )*/
-    }
-    /*init(context)
-    val url = "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}"
-    queue!!.add(
-        CustomRequest(
-            url,
-            JsonObject::class.java,
-            {
-                Log.d("SUCCESSO_HISTORY", it.toString())
-            },
-            {
-                Log.d("HISTORY_FAIL", url)
-                Log.d("HISTORY_FAIL", it.stackTraceToString())
-                //header["Cookie"]?.let { it1 -> Log.d("PROVA", it1) }
-            }
-        )
-    )*/
-
-    /*checkSession(context) {
-        // TODO controllare parsing prenotazioni e capire come mai mi considera non loggato
-        initQueue(context)
-        queue!!.add(
-            JsonObjectRequest(Request.Method.GET,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}",
                 null,
-                {
-                    Log.d("mHistory_SUCCESS", it.toString())
-
-                    if (it.getBoolean("error")) {
-                        Toast.makeText(
-                            context, context.getString(R.string.error_getting_courses),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                },
-                {
-                    Toast.makeText(
-                        context, context.getString(R.string.error_getting_courses),
-                        Toast.LENGTH_LONG
-                    ).show()
-                })
+                { Log.d("SERVER_SUCCESS", it.toString()) },
+                { Log.d("SERVER_FAIL", it.toString()) })
         )
-    }*/
-
-    /*fun checkSessionCookie(headers: Map<String?, String>) {
-        if (headers.containsKey(setCookieKey)
-            && headers[setCookieKey]!!.startsWith(sessionCookie)
-        ) {
-            var cookie = headers[setCookieKey]
-            if (cookie!!.isNotEmpty()) {
-                val splitCookie = cookie.split(";".toRegex()).toTypedArray()
-                val splitSessionId = splitCookie[0].split("=".toRegex()).toTypedArray()
-                cookie = splitSessionId[1]
-                val prefEditor: SharedPreferences.Editor = preferences!!.edit()
-                prefEditor.putString(sessionCookie, cookie)
-                prefEditor.apply()
-
-                Log.d("PREFERENZE", preferences.toString())
-            }
-            Log.d("PREFERENZE_FUORI_1", preferences.toString())
-        }
-        Log.d("PREFERENZE_FUORI_2", preferences.toString())
     }
-
-    fun addSessionCookie(headers: MutableMap<String?, String?>) {
-        val sessionId: String = preferences!!.getString(sessionCookie, "")!!
-        if (sessionId.isNotEmpty()) {
-            val builder = StringBuilder()
-            builder.append(sessionCookie)
-            builder.append("=")
-            builder.append(sessionId)
-            if (headers.containsKey(cookieKey)) {
-                builder.append("; ")
-                builder.append(headers[cookieKey])
-            }
-            headers[cookieKey] = builder.toString()
-        }
-    }*/
 }

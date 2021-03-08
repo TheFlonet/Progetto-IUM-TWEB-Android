@@ -14,8 +14,6 @@ import com.ium.easyreps.util.NetworkUtil
 import com.ium.easyreps.viewmodel.UserVM
 
 class MainActivity : AppCompatActivity() {
-    // TODO verificare se l'emulatore salva i cookie
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

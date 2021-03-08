@@ -39,6 +39,6 @@ class TabHistoryAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) 
     }
 
     fun initFragments(context: Context) {
-        ServerRequest.getHistory(context, fragments)
+        ServerRequest.getHistory(context)
     }
 }

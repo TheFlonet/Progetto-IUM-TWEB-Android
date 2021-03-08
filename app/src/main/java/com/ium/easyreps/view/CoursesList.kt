@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerLessonsAdapter
+import com.ium.easyreps.model.Course
 import com.ium.easyreps.model.PrivateLesson
+import com.ium.easyreps.viewmodel.CoursesVM
 import com.ium.easyreps.viewmodel.UserVM
 
-class CoursesList(var coursesList: List<PrivateLesson>) : Fragment() {
+class CoursesList(var pos: Int) : Fragment() {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter
     private lateinit var coursesRecycler: RecyclerView
     private lateinit var mView: View
@@ -37,12 +39,16 @@ class CoursesList(var coursesList: List<PrivateLesson>) : Fragment() {
         val linearLayoutManager = LinearLayoutManager(activity)
         coursesRecycler.layoutManager = linearLayoutManager
         coursesAdapter = RecyclerLessonsAdapter(
-            coursesList,
+            CoursesVM.courses.value!![pos],
             UserVM.user.value!!.isLogged,
             UserVM.user.value!!.name
         )
         coursesRecycler.adapter = coursesAdapter
         coursesRecycler.setHasFixedSize(true)
+
+        CoursesVM.courses.observe(viewLifecycleOwner, {
+            coursesAdapter.notifyDataSetChanged()
+        })
 
     }
 }

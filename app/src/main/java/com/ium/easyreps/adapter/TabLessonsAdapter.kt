@@ -8,15 +8,16 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.view.CoursesList
+import com.ium.easyreps.viewmodel.CoursesVM
 
 class TabLessonsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
     private var fragments: List<CoursesList> = arrayListOf(
-        CoursesList(ArrayList()),
-        CoursesList(ArrayList()),
-        CoursesList(ArrayList()),
-        CoursesList(ArrayList()),
-        CoursesList(ArrayList())
+        CoursesList(0),
+        CoursesList(1),
+        CoursesList(2),
+        CoursesList(3),
+        CoursesList(4)
     )
 
     override fun getItemCount(): Int {
@@ -28,9 +29,6 @@ class TabLessonsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) 
     }
 
     fun initFragments(context: Context) {
-        for (fragment in fragments) {
-            fragment.coursesList = ArrayList()
-        }
-        ServerRequest.getCourses(context, fragments)
+        ServerRequest.getCourses(context)
     }
 }
