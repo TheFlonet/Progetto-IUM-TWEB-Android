@@ -1,25 +1,24 @@
 package com.ium.easyreps.util
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
-import androidx.preference.PreferenceManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
+import com.ium.easyreps.model.Course
+import com.ium.easyreps.model.PrivateLesson
+import com.ium.easyreps.model.Teacher
 import com.ium.easyreps.model.User
+import com.ium.easyreps.viewmodel.CoursesVM
 import com.ium.easyreps.viewmodel.UserVM
-import com.squareup.okhttp.*
 import org.json.JSONArray
 
 object ServerRequest {
-    var queue: RequestQueue? = null
-    var client: OkHttpClient? = null
-    private var preferences: SharedPreferences? = null
+    private var queue: RequestQueue? = null
 
     fun login(context: Context, username: String, password: String, callback: () -> Unit) {
         init(context)
@@ -35,7 +34,6 @@ object ServerRequest {
                         UserVM.user.value?.password = password
                     }
                     Config.session = it.getString("SessionID")
-
                     callback()
                 },
                 {})
@@ -46,11 +44,6 @@ object ServerRequest {
         if (queue == null) {
             queue = Volley.newRequestQueue(context)
         }
-        if (client == null) {
-            client = OkHttpClient()
-        }
-        if (preferences == null) preferences =
-            PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     fun logout(context: Context, callback: () -> Unit) {
@@ -62,10 +55,12 @@ object ServerRequest {
                 null,
                 {
                     UserVM.user.value = User()
+                    Config.session = null
                     callback()
                 },
                 {
                     UserVM.user.value = User()
+                    Config.session = null
                     callback()
                 })
         )
@@ -77,19 +72,51 @@ object ServerRequest {
             Request.Method.GET,
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getPrivateLessons}",
             null, {
-                createFragments(it)
-                removeBookedCourses(context)
+                if (getBusyCourses(context))
+                    parseCoursesJson(it)
+                else
+                    Toast.makeText(
+                        context, context.getString(R.string.error_getting_courses),
+                        Toast.LENGTH_LONG
+                    ).show()
             }, {
                 Toast.makeText(
                     context, context.getString(R.string.error_getting_courses),
                     Toast.LENGTH_LONG
                 ).show()
-                Log.d("SERVER", it.toString())
             })
         )
     }
 
-    private fun removeBookedCourses(context: Context) {
+    private fun parseCoursesJson(jsonArray: JSONArray?) {
+        if (jsonArray != null) {
+            for (i in (0 until jsonArray.length())) {
+                val input = jsonArray.getJSONObject(i)
+                val subject = input.getJSONObject("corso")
+                val teacher = input.getJSONObject("docente")
+                for (j in (0 until 5)) {
+                    for (h in (15 until 19))
+                        CoursesVM.courses[j].value!!.add(
+                            PrivateLesson(
+                                Course(
+                                    subject.getInt("ID"),
+                                    subject.getString("titolo")
+                                ),
+                                Teacher(
+                                    teacher.getInt("ID"),
+                                    teacher.getString("nome"),
+                                    teacher.getString("cognome")
+                                ), Day.getDay(j), h
+                            )
+                        )
+                    CoursesVM.courses[j].value!!.sort()
+                    Log.d("COURSES$j", CoursesVM.courses[j].value!!.size.toString())
+                }
+            }
+        }
+    }
+
+    private fun getBusyCourses(context: Context): Boolean {
         init(context)
         queue!!.add(
             JsonArrayRequest(
@@ -97,39 +124,23 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getActiveReservations}",
                 null,
                 {
-                    /*for ((i, fragment) in fragments.withIndex()) {
-                        val coursesOfTheDay = it.getJSONObject(i)
-                        for (course in CoursesVM.courses.value!!) {
-                            // TODO creare esempio da sottrarre
-                        }
-                    }*/
+                    for (i in (0 until it.length())) {
+                        var dayCourses = it.getJSONObject(i)
+                        // TODO creare esempio da sottrarre
 
+                    }
+                    Log.d("SERVER_SUCCESS", it.toString())
                 },
                 {
                     Toast.makeText(
                         context, context.getString(R.string.error_getting_courses),
                         Toast.LENGTH_LONG
                     ).show()
+                    Log.d("SERVER_FAIL", it.toString())
                 })
         )
-    }
 
-    private fun createFragments(webResponse: JSONArray?) {
-        /*for (i in (0 until 5)) {
-            val courses = ArrayList<PrivateLesson>()
-            for (j in (15 until 19))
-                if (webResponse?.keys() != null)
-                    for (z in webResponse.keys())
-                        for (t in (0 until webResponse.getJSONArray(z).length()))
-                            courses.add(
-                                PrivateLesson(
-                                    z.toString(),
-                                    webResponse.getJSONArray(z).getString(t),
-                                    Day.getDay(i), j
-                                )
-                            )
-            CoursesVM.courses.value!![i].addAll(courses)
-        }*/
+        return true
     }
 
     fun getHistory(context: Context) {
@@ -144,6 +155,6 @@ object ServerRequest {
                 { Log.d("SERVER_SUCCESS", it.toString()) },
                 { Log.d("SERVER_FAIL", it.toString()) })
         )
-        Log.d("SERVER", Config.session)
+        Log.d("SERVER", Config.session!!)
     }
 }

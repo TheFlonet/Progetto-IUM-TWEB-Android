@@ -8,9 +8,9 @@ object Config {
     const val logout = "logout"
     const val checkSession = "checksession"
     const val getReservations = "getprenotazioniutente"
-    const val getActiveReservations = "stampaprenotazioniattive" // fornisce TUTTE le prenotazioni attive
+    const val getActiveReservations = "getprenotazioniattive" // fornisce TUTTE le prenotazioni attive
     const val getPrivateLessons = "getdocenze" //ottiene tutti i corsi (per visualizzare schermata inizio getdocenze - stampaprenotazioniattive)
     const val cancel = "disdireprenotazione"
     const val book = "effettuareprenotazione"
-    lateinit var session: String
+    var session: String? = null
 }

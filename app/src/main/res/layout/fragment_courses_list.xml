@@ -5,9 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".view.CoursesList">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/coursesRecycler"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/swipeLayout">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/coursesRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

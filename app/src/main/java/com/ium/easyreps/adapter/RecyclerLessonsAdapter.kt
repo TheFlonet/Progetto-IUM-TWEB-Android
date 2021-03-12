@@ -21,7 +21,7 @@ import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.NetworkUtil
 
 class RecyclerLessonsAdapter(
-    private var lessons: List<PrivateLesson>,
+    var lessons: ArrayList<PrivateLesson>,
     private var isLogged: Boolean,
     private var username: String
 ) : RecyclerView.Adapter<RecyclerLessonsAdapter.ViewHolder>() {
@@ -34,13 +34,7 @@ class RecyclerLessonsAdapter(
         var layout: ConstraintLayout = itemView.findViewById(R.id.courseLayout)
     }
 
-    fun update() {
-        lessons = ArrayList<PrivateLesson>(lessons)
-        notifyDataSetChanged()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
         return ViewHolder(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.course_item, parent, false)
@@ -49,8 +43,8 @@ class RecyclerLessonsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val lesson = lessons[position]
-        holder.course.text = lesson.course
-        val teacherTxt = lesson.teacher
+        holder.course.text = lesson.course.name
+        val teacherTxt = lesson.teacher.surname + " " + lesson.teacher.name
         holder.teacher.text = teacherTxt
         val hourTxt = "${lesson.startAt}-${lesson.startAt + 1}"
         holder.start.text = hourTxt
@@ -132,5 +126,12 @@ class RecyclerLessonsAdapter(
 
     override fun getItemCount(): Int {
         return lessons.size
+    }
+
+    fun updateData(data: ArrayList<PrivateLesson>) {
+        lessons.clear()
+        Log.d("COURSES", data.size.toString())
+        lessons.addAll(data)
+        notifyDataSetChanged()
     }
 }
