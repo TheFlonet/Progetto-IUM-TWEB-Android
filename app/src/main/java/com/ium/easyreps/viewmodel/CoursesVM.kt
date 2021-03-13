@@ -5,11 +5,11 @@ import com.ium.easyreps.model.PrivateLesson
 
 object CoursesVM {
     var courses = arrayListOf(
-        ArrayList<PrivateLesson>(),
-        ArrayList(),
-        ArrayList(),
-        ArrayList(),
-        ArrayList()
+        MutableLiveData(ArrayList<PrivateLesson>()),
+        MutableLiveData(ArrayList()),
+        MutableLiveData(ArrayList()),
+        MutableLiveData(ArrayList()),
+        MutableLiveData(ArrayList())
     )
 
     var busyCourses = MutableLiveData(
