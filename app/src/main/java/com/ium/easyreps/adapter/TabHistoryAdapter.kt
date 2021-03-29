@@ -27,8 +27,11 @@ import org.json.JSONObject
 
 class TabHistoryAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
-    private var fragments = ArrayList<HistoryList>(3)
-    private var user = UserVM.user.value
+    private var fragments: List<HistoryList> = arrayListOf(
+        HistoryList(0),
+        HistoryList(1),
+        HistoryList(2)
+    )
 
     override fun getItemCount(): Int {
         return fragments.size

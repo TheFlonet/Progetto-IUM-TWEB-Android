@@ -65,4 +65,5 @@
     <string name="error_booking">Error while booking a lesson</string>
     <string name="error_cancel">Error during reservation cancelling</string>
     <string name="error_discard">Error in discarding reservation</string>
+    <string name="error_history">Error while getting history</string>
 </resources>

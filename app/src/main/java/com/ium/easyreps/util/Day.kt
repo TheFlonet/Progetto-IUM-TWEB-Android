@@ -45,5 +45,15 @@ enum class Day {
                 FRI -> "Friday"
             }
         }
+
+        fun toIta(day: Day): String {
+            return when (day) {
+                MON -> "LUN"
+                TUE -> "MAR"
+                WED -> "MER"
+                THU -> "GIO"
+                FRI -> "VEN"
+            }
+        }
     }
 }

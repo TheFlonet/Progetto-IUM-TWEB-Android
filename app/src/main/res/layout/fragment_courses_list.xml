@@ -6,9 +6,9 @@
     tools:context=".view.CoursesList">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeCourses"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/swipeLayout">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/coursesRecycler"

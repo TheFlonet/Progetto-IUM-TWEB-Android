@@ -29,5 +29,14 @@ enum class State {
                 CANCELLED -> "Cancelled"
             }
         }
+
+        fun fromItaToNum(state: String): Int {
+            return when (state) {
+                "ATTIVA" -> 0
+                "EFFETTUATA" -> 1
+                "DISDETTA" -> 2
+                else -> throw IllegalArgumentException("Invalid state name")
+            }
+        }
     }
 }

@@ -11,14 +11,4 @@ object CoursesVM {
         MutableLiveData(ArrayList()),
         MutableLiveData(ArrayList())
     )
-
-    var busyCourses = MutableLiveData(
-        arrayListOf(
-            ArrayList<PrivateLesson>(),
-            ArrayList(),
-            ArrayList(),
-            ArrayList(),
-            ArrayList()
-        )
-    )
 }

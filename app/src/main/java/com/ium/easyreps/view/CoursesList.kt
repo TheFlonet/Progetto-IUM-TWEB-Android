@@ -18,7 +18,6 @@ class CoursesList(var pos: Int) : Fragment() {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter
     private lateinit var coursesRecycler: RecyclerView
     private lateinit var mView: View
-    private var isLogged = false
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
@@ -27,7 +26,7 @@ class CoursesList(var pos: Int) : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mView = inflater.inflate(R.layout.fragment_courses_list, container, false) as View
-        swipeRefreshLayout = mView.findViewById(R.id.swipeLayout)
+        swipeRefreshLayout = mView.findViewById(R.id.swipeCourses)
         swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
             coursesAdapter.updateData(CoursesVM.courses[pos].value!!)
@@ -37,18 +36,13 @@ class CoursesList(var pos: Int) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        UserVM.user.observe(viewLifecycleOwner, {
-            isLogged = it.isLogged
-        })
 
         coursesRecycler = view.findViewById(R.id.coursesRecycler)
         val linearLayoutManager = LinearLayoutManager(activity)
         coursesRecycler.layoutManager = linearLayoutManager
 
         coursesAdapter = RecyclerLessonsAdapter(
-            CoursesVM.courses[pos].value!!.clone() as ArrayList<PrivateLesson>,
-            UserVM.user.value!!.isLogged,
-            UserVM.user.value!!.name
+            CoursesVM.courses[pos].value!!.clone() as ArrayList<PrivateLesson>
         )
 
         coursesRecycler.adapter = coursesAdapter

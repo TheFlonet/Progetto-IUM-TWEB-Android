@@ -5,8 +5,8 @@ import com.ium.easyreps.util.State
 
 class Reservation(
     var id: Int,
-    var course: Course,
-    var teacher: Teacher,
+    var course: String,
+    var teacher: String,
     var state: State,
     var day: Day,
     var startAt: Int

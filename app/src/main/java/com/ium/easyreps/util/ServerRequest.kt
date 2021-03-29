@@ -9,36 +9,13 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
-import com.ium.easyreps.model.Course
-import com.ium.easyreps.model.PrivateLesson
-import com.ium.easyreps.model.Teacher
-import com.ium.easyreps.model.User
-import com.ium.easyreps.viewmodel.CoursesVM
-import com.ium.easyreps.viewmodel.UserVM
+import com.ium.easyreps.model.*
+import com.ium.easyreps.viewmodel.*
 import org.json.JSONArray
+import org.json.JSONException
 
 object ServerRequest {
     private var queue: RequestQueue? = null
-
-    fun login(context: Context, username: String, password: String, callback: () -> Unit) {
-        init(context)
-        queue!!.add(
-            JsonObjectRequest(Request.Method.GET,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
-                null,
-                {
-                    UserVM.user.value?.isLogged = it.getBoolean("loggedIn")
-                    if (UserVM.user.value?.isLogged == true) {
-                        UserVM.user.value?.name = it.getString("username")
-                        UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
-                        UserVM.user.value?.password = password
-                    }
-                    Config.session = it.getString("SessionID")
-                    callback()
-                },
-                {})
-        )
-    }
 
     private fun init(context: Context) {
         if (queue == null) {
@@ -46,24 +23,36 @@ object ServerRequest {
         }
     }
 
+    fun login(context: Context, username: String, password: String, callback: () -> Unit) {
+        init(context)
+        queue!!.add(JsonObjectRequest(Request.Method.GET,
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
+            null, {
+                UserVM.user.value?.isLogged = it.getBoolean("loggedIn")
+                if (UserVM.user.value?.isLogged == true) {
+                    UserVM.user.value?.name = it.getString("username")
+                    UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
+                    UserVM.user.value?.password = password
+                }
+                Config.session = it.getString("SessionID")
+                callback()
+            }, {})
+        )
+    }
+
     fun logout(context: Context, callback: () -> Unit) {
         init(context)
         queue!!.add(
-            JsonObjectRequest(
-                Request.Method.GET,
+            JsonObjectRequest(Request.Method.GET,
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.logout}",
-                null,
-                {
-                    UserVM.user.value = User()
-                    Config.session = null
-                    callback()
-                },
-                {
-                    UserVM.user.value = User()
-                    Config.session = null
-                    callback()
-                })
+                null, { invalidateLogin(callback) }, { invalidateLogin(callback) })
         )
+    }
+
+    private fun invalidateLogin(callback: () -> Unit) {
+        UserVM.user.value = User()
+        Config.session = null
+        callback()
     }
 
     fun getCourses(context: Context) {
@@ -72,23 +61,18 @@ object ServerRequest {
             Request.Method.GET,
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getPrivateLessons}",
             null, {
-                if (getBusyCourses(context))
-                    parseCoursesJson(it)
-                else
-                    Toast.makeText(
-                        context, context.getString(R.string.error_getting_courses),
-                        Toast.LENGTH_LONG
-                    ).show()
+                parseCoursesJson(it, context)
             }, {
                 Toast.makeText(
-                    context, context.getString(R.string.error_getting_courses),
+                    context,
+                    context.getString(R.string.error_getting_courses),
                     Toast.LENGTH_LONG
                 ).show()
             })
         )
     }
 
-    private fun parseCoursesJson(jsonArray: JSONArray?) {
+    private fun parseCoursesJson(jsonArray: JSONArray?, context: Context) {
         if (jsonArray != null) {
             for (i in (0 until jsonArray.length())) {
                 val input = jsonArray.getJSONObject(i)
@@ -110,14 +94,13 @@ object ServerRequest {
                             )
                         )
                     CoursesVM.courses[j].value!!.sort()
-                    Log.d("COURSES$j", CoursesVM.courses[j].value!!.size.toString())
                 }
             }
         }
+        removeBusyCourses(context)
     }
 
-    private fun getBusyCourses(context: Context): Boolean {
-        init(context)
+    private fun removeBusyCourses(context: Context) {
         queue!!.add(
             JsonArrayRequest(
                 Request.Method.GET,
@@ -125,36 +108,151 @@ object ServerRequest {
                 null,
                 {
                     for (i in (0 until it.length())) {
-                        var dayCourses = it.getJSONObject(i)
-                        // TODO creare esempio da sottrarre
-
+                        val day = it.getJSONObject(i)
+                        val lessons = CoursesVM.courses[i].value
+                        for (j in (15 until 19)) {
+                            var hour: JSONArray?
+                            try {
+                                hour = day.getJSONArray(j.toString())
+                            } catch (e: JSONException) {
+                                continue
+                            }
+                            for (z in (0 until hour!!.length())) {
+                                val reservation = hour.getJSONObject(z)
+                                val dayLessons = lessons!!.iterator()
+                                while (dayLessons.hasNext()) {
+                                    val lesson = dayLessons.next()
+                                    if (lesson.course.name == reservation.getString("corso")
+                                        && lesson.teacher.surname == reservation.getString("docente")
+                                        && lesson.startAt == j
+                                    )
+                                        dayLessons.remove()
+                                }
+                            }
+                        }
                     }
-                    Log.d("SERVER_SUCCESS", it.toString())
                 },
                 {
                     Toast.makeText(
                         context, context.getString(R.string.error_getting_courses),
                         Toast.LENGTH_LONG
                     ).show()
-                    Log.d("SERVER_FAIL", it.toString())
                 })
         )
+    }
 
-        return true
+    fun cancelRequest(context: Context, reservation: Reservation) {
+        if (NetworkUtil.checkConnection(context)) {
+            val cancelRequest = JsonObjectRequest(
+                Request.Method.POST,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.cancel}&id=${reservation.id}",
+                null,
+                {
+                    var pos = ReservationVM.reservations[0].value!!.indexOf(reservation)
+                    ReservationVM.reservations[0].value!!.remove(reservation)
+                    ReservationVM.reservations[2].value!!.add(reservation)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.discard_confirmation),
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_cancel),
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
+
+            Volley.newRequestQueue(context).add(cancelRequest)
+        } else {
+            Toast.makeText(context, context.getString(R.string.no_connectivity), Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
+    fun bookRequest(context: Context, lesson: PrivateLesson) {
+        if (NetworkUtil.checkConnection(context)) {
+            val cancelRequest = JsonObjectRequest(
+                Request.Method.POST,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.book}&Session=${Config.session}&idCorso=${lesson.course.id}&idDocente=${lesson.teacher.id}&ora=${lesson.startAt}&day=${
+                    Day.toIta(
+                        lesson.day
+                    )
+                }",
+                null,
+                {
+                    if (it.getBoolean("error")) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.error_booking),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.book_confirmation),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_booking),
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
+
+            Volley.newRequestQueue(context).add(cancelRequest)
+        } else {
+            Toast.makeText(context, context.getString(R.string.no_connectivity), Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     fun getHistory(context: Context) {
         init(context)
-        val url =
-            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value?.name}&Session=${Config.session}"
         queue!!.add(
             JsonArrayRequest(
                 Request.Method.GET,
-                url,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value!!.name}&Session=${Config.session}",
                 null,
-                { Log.d("SERVER_SUCCESS", it.toString()) },
-                { Log.d("SERVER_FAIL", it.toString()) })
+                {
+                    for (i in (0 until it.length())) {
+                        val reservationInDay = it.getJSONObject(i)
+                        for (j in (15 until 19)) {
+                            var reservationInHour: JSONArray?
+                            try {
+                                reservationInHour = reservationInDay.getJSONArray(j.toString())
+                            } catch (e: JSONException) {
+                                continue
+                            }
+                            for (z in (0 until reservationInHour!!.length())) {
+                                val reservation = reservationInHour.getJSONObject(z)
+                                val state = reservation.getString("stato")
+                                ReservationVM.reservations[State.fromItaToNum(state)].value!!.add(
+                                    Reservation(
+                                        reservation.getInt("id"),
+                                        reservation.getString("corso"),
+                                        reservation.getString("docente"),
+                                        State.getState(State.fromItaToNum(state)),
+                                        Day.getDay(i),
+                                        j
+                                    )
+                                )
+                            }
+                        }
+                    }
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_history),
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
         )
-        Log.d("SERVER", Config.session!!)
     }
 }

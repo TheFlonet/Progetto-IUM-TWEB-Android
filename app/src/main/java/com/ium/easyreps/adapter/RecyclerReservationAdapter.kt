@@ -1,30 +1,24 @@
 package com.ium.easyreps.adapter
 
-import android.content.Context
 import android.content.DialogInterface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
 import com.ium.easyreps.model.Reservation
-import com.ium.easyreps.util.Config
 import com.ium.easyreps.util.Day
-import com.ium.easyreps.util.NetworkUtil
+import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.util.State
 
-class RecyclerReservationAdapter(private var reservationList: List<Reservation>) :
+class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
     RecyclerView.Adapter<RecyclerReservationAdapter.ViewHolder>() {
-    private var canCancel = false
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var course: TextView = itemView.findViewById(R.id.courseText)
         var teacher: TextView = itemView.findViewById(R.id.teacherText)
         var start: TextView = itemView.findViewById(R.id.startText)
@@ -39,9 +33,9 @@ class RecyclerReservationAdapter(private var reservationList: List<Reservation>)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val reservation = reservationList[position]
-        holder.course.text = reservation.course.name
-        val teacherTxt = "${reservation.teacher.surname} ${reservation.teacher.name}"
+        val reservation = reservations[position]
+        holder.course.text = reservation.course
+        val teacherTxt = reservation.teacher
         holder.teacher.text = teacherTxt
         val hourTxt = "${reservation.startAt}-${reservation.startAt + 1}"
         holder.start.text = hourTxt
@@ -58,60 +52,27 @@ class RecyclerReservationAdapter(private var reservationList: List<Reservation>)
             .setMessage(
                 view.context.getString(
                     R.string.discard_message,
-                    reservation.course.name,
-                    reservation.teacher.surname,
+                    reservation.course,
+                    reservation.teacher,
                     Day.getDayName(reservation.day),
                     reservation.startAt
                 )
             )
             .setPositiveButton(view.context.getString(R.string.discard)) { dialogInterface: DialogInterface, _: Int ->
+                ServerRequest.cancelRequest(view.context, reservation)
                 dialogInterface.dismiss()
-                // TODO disdire prenotazione
-                cancelRequest(view.context, reservation.id)
-                if (canCancel) {
-                    canCancel = false
-                    Toast.makeText(
-                        view.context,
-                        view.context.getString(R.string.discard_confirmation),
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        view.context,
-                        view.context.getString(R.string.error_cancel),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
             }
             .setNegativeButton(view.context.getString(R.string.cancel)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
             }.create().show()
 
-    private fun cancelRequest(context: Context, id: Int) {
-        if (NetworkUtil.checkConnection(context)) {
-            val cancelRequest = JsonObjectRequest(
-                Request.Method.POST,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.cancel}&id=$id",
-                null,
-                {
-                    canCancel = true
-                },
-                {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.error_discard),
-                        Toast.LENGTH_LONG
-                    ).show()
-                })
-
-            Volley.newRequestQueue(context).add(cancelRequest)
-        } else {
-            Toast.makeText(context, context.getString(R.string.no_connectivity), Toast.LENGTH_LONG)
-                .show()
-        }
+    override fun getItemCount(): Int {
+        return reservations.size
     }
 
-    override fun getItemCount(): Int {
-        return reservationList.size
+    fun updateData(data: ArrayList<Reservation>) {
+        reservations.clear()
+        reservations.addAll(data)
+        notifyDataSetChanged()
     }
 }

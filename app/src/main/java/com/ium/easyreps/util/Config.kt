@@ -6,11 +6,10 @@ object Config {
     const val servlet = "ServletMain"
     const val login = "login"
     const val logout = "logout"
-    const val checkSession = "checksession"
     const val getReservations = "getprenotazioniutente"
-    const val getActiveReservations = "getprenotazioniattive" // fornisce TUTTE le prenotazioni attive
-    const val getPrivateLessons = "getdocenze" //ottiene tutti i corsi (per visualizzare schermata inizio getdocenze - stampaprenotazioniattive)
+    const val getActiveReservations = "getprenotazioniattive"
+    const val getPrivateLessons = "getdocenze"
     const val cancel = "disdireprenotazione"
-    const val book = "effettuareprenotazione"
+    const val book = "creaprenotazione"
     var session: String? = null
 }

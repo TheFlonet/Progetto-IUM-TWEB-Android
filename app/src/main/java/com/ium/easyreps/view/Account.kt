@@ -55,14 +55,7 @@ class Account : Fragment() {
         mView.findViewById<Button>(R.id.logoutButton).setOnClickListener {
             if (NetworkUtil.checkConnection(context)) {
                 context?.let { it1 ->
-                    ServerRequest.logout(it1) {
-                        if (UserVM.user.value?.isLogged == false) {
-                            findNavController().navigate(R.id.account_to_login)
-                        } else {
-                            Toast.makeText(context, getString(R.string.error_logout), Toast.LENGTH_LONG)
-                                .show()
-                        }
-                    }
+                    ServerRequest.logout(it1) { findNavController().navigate(R.id.account_to_login) }
                 }
             } else {
                 Toast.makeText(context, getString(R.string.no_connectivity), Toast.LENGTH_LONG)
