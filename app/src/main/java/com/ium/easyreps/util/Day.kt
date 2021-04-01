@@ -55,5 +55,16 @@ enum class Day {
                 FRI -> "VEN"
             }
         }
+
+        fun fromIta(day: String): Day {
+            return when (day) {
+                "LUN" -> MON
+                "MAR" -> TUE
+                "MER" -> WED
+                "GIO" -> THU
+                "VEN" -> FRI
+                else -> throw IllegalArgumentException("Invalid day name")
+            }
+        }
     }
 }

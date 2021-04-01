@@ -220,30 +220,19 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value!!.name}&Session=${Config.session}",
                 null,
                 {
+                    Log.d("prenotazioni", it.toString())
                     for (i in (0 until it.length())) {
-                        val reservationInDay = it.getJSONObject(i)
-                        for (j in (15 until 19)) {
-                            var reservationInHour: JSONArray?
-                            try {
-                                reservationInHour = reservationInDay.getJSONArray(j.toString())
-                            } catch (e: JSONException) {
-                                continue
-                            }
-                            for (z in (0 until reservationInHour!!.length())) {
-                                val reservation = reservationInHour.getJSONObject(z)
-                                val state = reservation.getString("stato")
-                                ReservationVM.reservations[State.fromItaToNum(state)].value!!.add(
-                                    Reservation(
-                                        reservation.getInt("id"),
-                                        reservation.getString("corso"),
-                                        reservation.getString("docente"),
-                                        State.getState(State.fromItaToNum(state)),
-                                        Day.getDay(i),
-                                        j
-                                    )
-                                )
-                            }
-                        }
+                        val res = it.getJSONObject(i);
+                        ReservationVM.reservations[State.fromItaToNum(res.getString("stato"))].value!!.add(
+                            Reservation(
+                                res.getInt("id"),
+                                res.getString("corso"),
+                                res.getString("docente"),
+                                State.getState(State.fromItaToNum(res.getString("stato"))),
+                                Day.fromIta(res.getString("giorno")),
+                                res.getInt("ora")
+                            )
+                        )
                     }
                 },
                 {
