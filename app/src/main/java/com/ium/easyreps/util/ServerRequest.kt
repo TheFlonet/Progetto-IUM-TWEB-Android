@@ -1,6 +1,7 @@
 package com.ium.easyreps.util
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -260,13 +261,16 @@ object ServerRequest {
                         ReservationVM.reservations[i].value!!.clear()
                     for (i in (0 until it.length())) {
                         val res = it.getJSONObject(i)
+                        val course =
+                            if (res.isNull("corso")) "Unknown course" else res.getString("corso")
+                        val teacher =
+                            if (res.isNull("docente")) "Unknown teacher" else "${res.getString("docente")} ${
+                                res.getString("nome")
+                            }"
                         val reservationToAdd = Reservation(
-                            res.getInt("id"),
-                            res.getString("corso"),
-                            res.getString("docente"),
+                            res.getInt("id"), course, teacher,
                             State.getState(State.fromItaToNum(res.getString("stato"))),
-                            Day.fromIta(res.getString("giorno")),
-                            res.getInt("ora")
+                            Day.fromIta(res.getString("giorno")), res.getInt("ora")
                         )
                         val target =
                             ReservationVM.reservations[State.fromItaToNum(res.getString("stato"))].value!!
