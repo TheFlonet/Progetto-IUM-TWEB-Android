@@ -66,5 +66,15 @@ enum class Day {
                 else -> throw IllegalArgumentException("Invalid day name")
             }
         }
+
+        fun getDayNum(day: Day): Int {
+            return when (day) {
+                MON -> 0
+                TUE -> 1
+                WED -> 2
+                THU -> 3
+                FRI -> 4
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@
     <string name="confirm_booking">Confirm booking</string>
     <string name="dialog_message">Confirm booking of %1$s with %2$s on %3$s (start at %4$d)?</string>
     <string name="book_confirmation">Lesson successfully booked</string>
+    <string name="done_confirmation">Reservation set as Done</string>
     <string name="abort">Abort</string>
 
     <!--INFO-->
@@ -38,6 +39,7 @@
     <string name="logout">Logout</string>
     <string name="history_icon">History icon</string>
     <string name="logout_icon">Logout icon</string>
+    <string name="course_icon">Courses icon</string>
     <string name="username_null_error">Insert username</string>
     <string name="password_null_error">Insert password</string>
 
@@ -52,6 +54,7 @@
     <string name="discard_reservation">Discard reservation</string>
     <string name="discard_confirmation">Lesson unreserved</string>
     <string name="discard_message">Do you want to discard %1$s with %2$s on %3$s (start at %4$d)?</string>
+    <string name="discard_done">Reservation %1$s with %2$s on %3$s (start at %4$d). Discard or set ad Done</string>
     <string name="discard">Discard</string>
     <string name="username_invalid_error">Invalid username</string>
     <string name="password_invalid_error">Invalid password</string>
@@ -66,4 +69,7 @@
     <string name="error_cancel">Error during reservation cancelling</string>
     <string name="error_discard">Error in discarding reservation</string>
     <string name="error_history">Error while getting history</string>
+    <string name="error_done">Error while setting reservation as done</string>
+    <string name="set_as_done">Set as done</string>
+    <string name="course">Check available courses</string>
 </resources>

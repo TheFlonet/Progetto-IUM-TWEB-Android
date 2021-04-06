@@ -9,6 +9,7 @@ object Config {
     const val getReservations = "getprenotazioniutente"
     const val getActiveReservations = "getprenotazioniattive"
     const val getPrivateLessons = "getdocenze"
+    const val setReservationDone = "prenotazioneeffettuata"
     const val cancel = "disdireprenotazione"
     const val book = "creaprenotazione"
     var session: String? = null

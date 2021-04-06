@@ -42,6 +42,16 @@
         app:layout_constraintTop_toTopOf="@+id/historyIcon" />
 
     <Button
+        android:id="@+id/coursesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x_large"
+        android:text="@string/course"
+        app:layout_constraintBottom_toBottomOf="@+id/courseIcon"
+        app:layout_constraintStart_toEndOf="@+id/courseIcon"
+        app:layout_constraintTop_toTopOf="@+id/courseIcon" />
+
+    <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,6 +72,16 @@
         android:contentDescription="@string/history_icon" />
 
     <ImageView
+        android:id="@+id/courseIcon"
+        android:layout_width="@dimen/icon_dim"
+        android:layout_height="@dimen/icon_dim"
+        android:layout_margin="@dimen/x_large"
+        android:contentDescription="@string/course_icon"
+        android:src="@drawable/ic_course"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/historyIcon" />
+
+    <ImageView
         android:id="@+id/logoutIcon"
         android:layout_width="@dimen/icon_dim"
         android:layout_height="@dimen/icon_dim"
@@ -69,5 +89,5 @@
         android:contentDescription="@string/logout_icon"
         android:src="@drawable/ic_logout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/historyIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/courseIcon" />
 </androidx.constraintlayout.widget.ConstraintLayout>

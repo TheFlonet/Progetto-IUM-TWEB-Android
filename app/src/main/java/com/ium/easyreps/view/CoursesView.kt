@@ -20,7 +20,6 @@ class CoursesView : Fragment() {
     private lateinit var tabAdapter: TabLessonsAdapter
     private lateinit var tabLayout: TabLayout
     private lateinit var mView: View
-    private var isLogged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,13 +40,6 @@ class CoursesView : Fragment() {
         return mView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        UserVM.user.observe(viewLifecycleOwner, {
-            isLogged = it.isLogged
-        })
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
     }
@@ -55,19 +47,15 @@ class CoursesView : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.aboutItem -> {
-                findNavController().navigate(R.id.home_to_about)
-                return true
-            }
-            R.id.userItem -> {
-                if (isLogged)
-                    findNavController().navigate(R.id.home_to_account)
-                else
-                    findNavController().navigate(R.id.home_to_login)
-
+                findNavController().navigate(R.id.course_to_about)
                 return true
             }
             android.R.id.home -> {
-                activity?.finish()
+                if (UserVM.user.value!!.isLogged)
+                    findNavController().navigate(R.id.course_to_account)
+                else
+                    findNavController().navigate(R.id.course_to_login)
+
                 return true
             }
         }

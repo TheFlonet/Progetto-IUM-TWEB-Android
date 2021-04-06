@@ -51,7 +51,7 @@ class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
             .setTitle(view.context.getString(R.string.discard_reservation))
             .setMessage(
                 view.context.getString(
-                    R.string.discard_message,
+                    R.string.discard_done,
                     reservation.course,
                     reservation.teacher,
                     Day.getDayName(reservation.day),
@@ -62,7 +62,11 @@ class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
                 ServerRequest.cancelRequest(view.context, reservation)
                 dialogInterface.dismiss()
             }
-            .setNegativeButton(view.context.getString(R.string.cancel)) { dialogInterface: DialogInterface, _: Int ->
+            .setNeutralButton(view.context.getString(R.string.cancel)) { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+            }
+            .setNegativeButton(view.context.getString(R.string.set_as_done)) { dialogInterface: DialogInterface, _: Int ->
+                ServerRequest.doneRequest(view.context, reservation)
                 dialogInterface.dismiss()
             }.create().show()
 
@@ -73,6 +77,7 @@ class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
     fun updateData(data: ArrayList<Reservation>) {
         reservations.clear()
         reservations.addAll(data)
+        reservations.sort()
         notifyDataSetChanged()
     }
 }

@@ -88,6 +88,7 @@ class RecyclerLessonsAdapter(
     fun updateData(data: ArrayList<PrivateLesson>) {
         lessons.clear()
         lessons.addAll(data)
+        lessons.sort()
         notifyDataSetChanged()
     }
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
-    app:startDestination="@id/courses">
+    app:startDestination="@id/login">
 
     <fragment
         android:id="@+id/courses"
@@ -11,16 +11,13 @@
         android:label="fragment_courses_view"
         tools:layout="@layout/fragment_courses_view" >
         <action
-            android:id="@+id/home_to_about"
+            android:id="@+id/course_to_about"
             app:destination="@id/about" />
         <action
-            android:id="@+id/home_to_history"
-            app:destination="@id/history" />
-        <action
-            android:id="@+id/home_to_login"
+            android:id="@+id/course_to_login"
             app:destination="@id/login" />
         <action
-            android:id="@+id/home_to_account"
+            android:id="@+id/course_to_account"
             app:destination="@id/account" />
     </fragment>
 
@@ -30,8 +27,11 @@
         android:label="fragment_about"
         tools:layout="@layout/fragment_about" >
         <action
-            android:id="@+id/about_to_home"
-            app:destination="@id/courses" />
+            android:id="@+id/about_to_login"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/about_to_account"
+            app:destination="@id/account" />
     </fragment>
 
     <fragment
@@ -50,8 +50,11 @@
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/login_to_home"
+            android:id="@+id/login_to_courses"
             app:destination="@id/courses" />
+        <action
+            android:id="@+id/login_to_about"
+            app:destination="@id/about" />
         <action
             android:id="@+id/login_to_account"
             app:destination="@id/account" />
@@ -71,5 +74,8 @@
         <action
             android:id="@+id/account_to_login"
             app:destination="@id/login" />
+        <action
+            android:id="@+id/account_to_about"
+            app:destination="@id/about" />
     </fragment>
 </navigation>

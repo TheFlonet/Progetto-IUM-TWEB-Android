@@ -9,7 +9,7 @@ class PrivateLesson(var course: Course, var teacher: Teacher, var day: Day, var 
 
     override fun compareTo(other: PrivateLesson): Int {
         if (startAt != other.startAt)
-            return startAt - other.startAt
+            return startAt.compareTo(other.startAt)
         if (course.name != other.course.name)
             return course.name.compareTo(other.course.name)
         if (teacher.surname != other.teacher.surname)

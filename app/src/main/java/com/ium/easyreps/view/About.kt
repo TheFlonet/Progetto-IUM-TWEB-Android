@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ium.easyreps.R
+import com.ium.easyreps.viewmodel.UserVM
 
 class About : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
@@ -35,7 +36,11 @@ class About : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                findNavController().navigate(R.id.about_to_home)
+                if (UserVM.user.value!!.isLogged)
+                    findNavController().navigate(R.id.about_to_account)
+                else
+                    findNavController().navigate(R.id.about_to_login)
+
                 return true
             }
         }

@@ -1,10 +1,7 @@
 package com.ium.easyreps.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -52,6 +49,10 @@ class Account : Fragment() {
             findNavController().navigate(R.id.account_to_history)
         }
 
+        mView.findViewById<Button>(R.id.coursesButton).setOnClickListener {
+            findNavController().navigate(R.id.account_to_courses)
+        }
+
         mView.findViewById<Button>(R.id.logoutButton).setOnClickListener {
             if (NetworkUtil.checkConnection(context)) {
                 context?.let { it1 ->
@@ -67,11 +68,20 @@ class Account : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                findNavController().navigate(R.id.account_to_courses)
+                context?.let { ServerRequest.logout(it) {} }
+                activity?.finish()
+                return true
+            }
+            R.id.aboutItem -> {
+                findNavController().navigate(R.id.account_to_about)
                 return true
             }
         }
 
         return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
     }
 }

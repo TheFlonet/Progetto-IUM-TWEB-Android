@@ -1,10 +1,7 @@
 package com.ium.easyreps.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +48,10 @@ class Login : Fragment() {
             canLog(username.trim(), password.trim())
         }
 
+        mView.findViewById<Button>(R.id.courseButton).setOnClickListener {
+            findNavController().navigate(R.id.login_to_courses)
+        }
+
         return mView
     }
 
@@ -60,18 +61,17 @@ class Login : Fragment() {
         usernameField.isErrorEnabled = false
         passwordField.isErrorEnabled = false
 
-        areInputValid(username, password)
-        isPhoneConnected()
-
-        context?.let {
-            ServerRequest.login(it, username, password) {
-                if (user?.isLogged == true)
-                    findNavController().navigate(R.id.login_to_account)
-                else {
-                    usernameField.isErrorEnabled = true
-                    usernameField.error = getString(R.string.wrong_credential)
-                    passwordField.isErrorEnabled = true
-                    passwordField.error = getString(R.string.wrong_credential)
+        if (areInputValid(username, password) && isPhoneConnected()) {
+            context?.let {
+                ServerRequest.login(it, username, password) {
+                    if (user?.isLogged == true)
+                        findNavController().navigate(R.id.login_to_account)
+                    else {
+                        usernameField.isErrorEnabled = true
+                        usernameField.error = getString(R.string.wrong_credential)
+                        passwordField.isErrorEnabled = true
+                        passwordField.error = getString(R.string.wrong_credential)
+                    }
                 }
             }
         }
@@ -81,7 +81,7 @@ class Login : Fragment() {
         val usernameField = mView.findViewById<TextInputLayout>(R.id.usernameTextInput)
         val passwordField = mView.findViewById<TextInputLayout>(R.id.passwordTextInput)
 
-        if (username == "") {
+        if (username.isEmpty()) {
             usernameField.isErrorEnabled = true
             usernameField.error = getString(R.string.username_null_error)
             return false
@@ -91,7 +91,7 @@ class Login : Fragment() {
             usernameField.error = getString(R.string.username_invalid_error)
             return false
         }
-        if (password == "") {
+        if (password.isEmpty()) {
             passwordField.isErrorEnabled = true
             passwordField.error = getString(R.string.password_null_error)
             return false
@@ -103,6 +103,10 @@ class Login : Fragment() {
         }
 
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
     }
 
     private fun isPhoneConnected(): Boolean {
@@ -124,7 +128,11 @@ class Login : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                findNavController().navigate(R.id.login_to_home)
+                activity?.finish()
+                return true
+            }
+            R.id.aboutItem -> {
+                findNavController().navigate(R.id.login_to_about)
                 return true
             }
         }

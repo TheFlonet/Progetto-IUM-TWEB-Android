@@ -28,13 +28,12 @@ object ServerRequest {
         queue!!.add(JsonObjectRequest(Request.Method.GET,
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.login}&nome=$username&password=$password",
             null, {
-                UserVM.user.value?.isLogged = it.getBoolean("loggedIn")
-                if (UserVM.user.value?.isLogged == true) {
+                if (it.getBoolean("loggedIn")) {
+                    UserVM.user.value?.isLogged = it.getBoolean("loggedIn")
                     UserVM.user.value?.name = it.getString("username")
-                    UserVM.user.value?.isAdmin = it.getBoolean("isAdmin")
                     UserVM.user.value?.password = password
+                    Config.session = it.getString("SessionID")
                 }
-                Config.session = it.getString("SessionID")
                 callback()
             }, {})
         )
@@ -44,7 +43,7 @@ object ServerRequest {
         init(context)
         queue!!.add(
             JsonObjectRequest(Request.Method.GET,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.logout}",
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.logout}&Session=${Config.session}",
                 null, { invalidateLogin(callback) }, { invalidateLogin(callback) })
         )
     }
@@ -74,25 +73,29 @@ object ServerRequest {
 
     private fun parseCoursesJson(jsonArray: JSONArray?, context: Context) {
         if (jsonArray != null) {
+            for (i in CoursesVM.courses)
+                i.value!!.clear()
             for (i in (0 until jsonArray.length())) {
                 val input = jsonArray.getJSONObject(i)
                 val subject = input.getJSONObject("corso")
                 val teacher = input.getJSONObject("docente")
                 for (j in (0 until 5)) {
-                    for (h in (15 until 19))
-                        CoursesVM.courses[j].value!!.add(
-                            PrivateLesson(
-                                Course(
-                                    subject.getInt("ID"),
-                                    subject.getString("titolo")
-                                ),
-                                Teacher(
-                                    teacher.getInt("ID"),
-                                    teacher.getString("nome"),
-                                    teacher.getString("cognome")
-                                ), Day.getDay(j), h
-                            )
+                    for (h in (15 until 19)) {
+                        val lessonToAdd = PrivateLesson(
+                            Course(
+                                subject.getInt("ID"),
+                                subject.getString("titolo")
+                            ),
+                            Teacher(
+                                teacher.getInt("ID"),
+                                teacher.getString("nome"),
+                                teacher.getString("cognome")
+                            ), Day.getDay(j), h
                         )
+                        val target = CoursesVM.courses[j].value!!
+                        if (!target.contains(lessonToAdd))
+                            target.add(lessonToAdd)
+                    }
                     CoursesVM.courses[j].value!!.sort()
                 }
             }
@@ -109,25 +112,25 @@ object ServerRequest {
                 {
                     for (i in (0 until it.length())) {
                         val day = it.getJSONObject(i)
-                        val lessons = CoursesVM.courses[i].value
                         for (j in (15 until 19)) {
                             var hour: JSONArray?
                             try {
                                 hour = day.getJSONArray(j.toString())
+                                for (z in (0 until hour!!.length())) {
+                                    val reservation = hour.getJSONObject(z)
+                                    val dayLessons = CoursesVM.courses[i].value!!.iterator()
+                                    while (dayLessons.hasNext()) {
+                                        val lesson = dayLessons.next()
+                                        if (lesson.course.name == reservation.getString("corso")
+                                            && lesson.teacher.surname == reservation.getString("docente")
+                                            && lesson.startAt == j
+                                        ) {
+                                            dayLessons.remove()
+                                        }
+                                    }
+                                }
                             } catch (e: JSONException) {
                                 continue
-                            }
-                            for (z in (0 until hour!!.length())) {
-                                val reservation = hour.getJSONObject(z)
-                                val dayLessons = lessons!!.iterator()
-                                while (dayLessons.hasNext()) {
-                                    val lesson = dayLessons.next()
-                                    if (lesson.course.name == reservation.getString("corso")
-                                        && lesson.teacher.surname == reservation.getString("docente")
-                                        && lesson.startAt == j
-                                    )
-                                        dayLessons.remove()
-                                }
                             }
                         }
                     }
@@ -148,7 +151,6 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.cancel}&id=${reservation.id}",
                 null,
                 {
-                    var pos = ReservationVM.reservations[0].value!!.indexOf(reservation)
                     ReservationVM.reservations[0].value!!.remove(reservation)
                     ReservationVM.reservations[2].value!!.add(reservation)
                     Toast.makeText(
@@ -172,15 +174,43 @@ object ServerRequest {
         }
     }
 
+    fun doneRequest(context: Context, reservation: Reservation) {
+        init(context)
+        queue!!.add(
+            JsonObjectRequest(
+                Request.Method.GET,
+                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.setReservationDone}&id=${reservation.id}&Session=${Config.session}",
+                null,
+                {
+                    ReservationVM.reservations[0].value!!.remove(reservation)
+                    ReservationVM.reservations[1].value!!.add(reservation)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.done_confirmation),
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_done),
+                        Toast.LENGTH_LONG
+                    ).show()
+                })
+        )
+    }
+
     fun bookRequest(context: Context, lesson: PrivateLesson) {
+        val url =
+            "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.book}&Session=${Config.session}&idCorso=${lesson.course.id}&idDocente=${lesson.teacher.id}&ora=${lesson.startAt}&day=${
+                Day.toIta(
+                    lesson.day
+                )
+            }"
         if (NetworkUtil.checkConnection(context)) {
             val cancelRequest = JsonObjectRequest(
                 Request.Method.POST,
-                "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.book}&Session=${Config.session}&idCorso=${lesson.course.id}&idDocente=${lesson.teacher.id}&ora=${lesson.startAt}&day=${
-                    Day.toIta(
-                        lesson.day
-                    )
-                }",
+                url,
                 null,
                 {
                     if (it.getBoolean("error")) {
@@ -195,6 +225,7 @@ object ServerRequest {
                             context.getString(R.string.book_confirmation),
                             Toast.LENGTH_LONG
                         ).show()
+                        CoursesVM.courses[Day.getDayNum(lesson.day)].value!!.remove(lesson)
                     }
                 },
                 {
@@ -220,19 +251,22 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.getReservations}&utente=${UserVM.user.value!!.name}&Session=${Config.session}",
                 null,
                 {
-                    Log.d("prenotazioni", it.toString())
+                    for (i in (0 until 3))
+                        ReservationVM.reservations[i].value!!.clear()
                     for (i in (0 until it.length())) {
-                        val res = it.getJSONObject(i);
-                        ReservationVM.reservations[State.fromItaToNum(res.getString("stato"))].value!!.add(
-                            Reservation(
-                                res.getInt("id"),
-                                res.getString("corso"),
-                                res.getString("docente"),
-                                State.getState(State.fromItaToNum(res.getString("stato"))),
-                                Day.fromIta(res.getString("giorno")),
-                                res.getInt("ora")
-                            )
+                        val res = it.getJSONObject(i)
+                        val reservationToAdd = Reservation(
+                            res.getInt("id"),
+                            res.getString("corso"),
+                            res.getString("docente"),
+                            State.getState(State.fromItaToNum(res.getString("stato"))),
+                            Day.fromIta(res.getString("giorno")),
+                            res.getInt("ora")
                         )
+                        val target =
+                            ReservationVM.reservations[State.fromItaToNum(res.getString("stato"))].value!!
+                        if (!target.contains(reservationToAdd))
+                            target.add(reservationToAdd)
                     }
                 },
                 {
