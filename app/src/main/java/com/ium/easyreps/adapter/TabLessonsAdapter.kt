@@ -5,10 +5,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.view.CoursesList
-import com.ium.easyreps.viewmodel.CoursesVM
 
 class TabLessonsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {

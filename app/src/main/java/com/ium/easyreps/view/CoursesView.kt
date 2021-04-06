@@ -4,14 +4,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.TabLessonsAdapter
-import com.ium.easyreps.model.User
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.viewmodel.UserVM
 

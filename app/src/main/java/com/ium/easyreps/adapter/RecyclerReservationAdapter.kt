@@ -1,7 +1,6 @@
 package com.ium.easyreps.adapter
 
 import android.content.DialogInterface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,9 @@ import com.ium.easyreps.model.Reservation
 import com.ium.easyreps.util.Day
 import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.util.State
+import com.ium.easyreps.viewmodel.ReservationVM
 
-class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
+class RecyclerReservationAdapter(private var reservations: ArrayList<Reservation>) :
     RecyclerView.Adapter<RecyclerReservationAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,9 +41,14 @@ class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
         holder.start.text = hourTxt
         holder.day.text = Day.getDayName(reservation.day)
         holder.layout.setOnClickListener {
-            if (reservation.state == State.ACTIVE)
-                showConfirmDialog(it, reservation)
+            changeState(it, reservation)
+
         }
+    }
+
+    private fun changeState(view: View, selectedReservation: Reservation) {
+        if (selectedReservation.state == State.ACTIVE)
+            showConfirmDialog(view, selectedReservation)
     }
 
     private fun showConfirmDialog(view: View, reservation: Reservation) =
@@ -59,14 +64,20 @@ class RecyclerReservationAdapter(var reservations: ArrayList<Reservation>) :
                 )
             )
             .setPositiveButton(view.context.getString(R.string.discard)) { dialogInterface: DialogInterface, _: Int ->
-                ServerRequest.cancelRequest(view.context, reservation)
+                ServerRequest.cancelRequest(
+                    view.context,
+                    reservation
+                ) { updateData(ReservationVM.reservations[State.toNum(reservation.state)].value!!) }
                 dialogInterface.dismiss()
             }
             .setNeutralButton(view.context.getString(R.string.cancel)) { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
             }
             .setNegativeButton(view.context.getString(R.string.set_as_done)) { dialogInterface: DialogInterface, _: Int ->
-                ServerRequest.doneRequest(view.context, reservation)
+                ServerRequest.doneRequest(
+                    view.context,
+                    reservation
+                ) { updateData(ReservationVM.reservations[State.toNum(reservation.state)].value!!) }
                 dialogInterface.dismiss()
             }.create().show()
 

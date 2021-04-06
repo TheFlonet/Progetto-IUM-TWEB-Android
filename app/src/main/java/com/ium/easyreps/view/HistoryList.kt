@@ -11,10 +11,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerReservationAdapter
 import com.ium.easyreps.model.Reservation
-import com.ium.easyreps.viewmodel.CoursesVM
 import com.ium.easyreps.viewmodel.ReservationVM
 
-class HistoryList(var pos: Int) : Fragment() {
+class HistoryList(private var pos: Int) : Fragment() {
     private lateinit var reservationAdapter: RecyclerReservationAdapter
     private lateinit var reservationRecycler: RecyclerView
     private lateinit var mView: View
@@ -33,6 +32,7 @@ class HistoryList(var pos: Int) : Fragment() {
         return mView
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

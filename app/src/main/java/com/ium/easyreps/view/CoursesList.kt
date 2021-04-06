@@ -12,9 +12,8 @@ import com.ium.easyreps.R
 import com.ium.easyreps.adapter.RecyclerLessonsAdapter
 import com.ium.easyreps.model.PrivateLesson
 import com.ium.easyreps.viewmodel.CoursesVM
-import com.ium.easyreps.viewmodel.UserVM
 
-class CoursesList(var pos: Int) : Fragment() {
+class CoursesList(private var pos: Int) : Fragment() {
     private lateinit var coursesAdapter: RecyclerLessonsAdapter
     private lateinit var coursesRecycler: RecyclerView
     private lateinit var mView: View
@@ -34,6 +33,7 @@ class CoursesList(var pos: Int) : Fragment() {
         return mView
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

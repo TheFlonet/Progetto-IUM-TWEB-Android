@@ -1,7 +1,6 @@
 package com.ium.easyreps.util
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -144,13 +143,14 @@ object ServerRequest {
         )
     }
 
-    fun cancelRequest(context: Context, reservation: Reservation) {
+    fun cancelRequest(context: Context, reservation: Reservation, update: () -> Unit) {
         if (NetworkUtil.checkConnection(context)) {
             val cancelRequest = JsonObjectRequest(
                 Request.Method.POST,
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.cancel}&id=${reservation.id}",
                 null,
                 {
+                    reservation.state = State.CANCELLED
                     ReservationVM.reservations[0].value!!.remove(reservation)
                     ReservationVM.reservations[2].value!!.add(reservation)
                     Toast.makeText(
@@ -158,6 +158,7 @@ object ServerRequest {
                         context.getString(R.string.discard_confirmation),
                         Toast.LENGTH_LONG
                     ).show()
+                    update()
                 },
                 {
                     Toast.makeText(
@@ -174,7 +175,7 @@ object ServerRequest {
         }
     }
 
-    fun doneRequest(context: Context, reservation: Reservation) {
+    fun doneRequest(context: Context, reservation: Reservation, update: () -> Unit) {
         init(context)
         queue!!.add(
             JsonObjectRequest(
@@ -182,6 +183,7 @@ object ServerRequest {
                 "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.setReservationDone}&id=${reservation.id}&Session=${Config.session}",
                 null,
                 {
+                    reservation.state = State.DONE
                     ReservationVM.reservations[0].value!!.remove(reservation)
                     ReservationVM.reservations[1].value!!.add(reservation)
                     Toast.makeText(
@@ -189,6 +191,7 @@ object ServerRequest {
                         context.getString(R.string.done_confirmation),
                         Toast.LENGTH_LONG
                     ).show()
+                    update()
                 },
                 {
                     Toast.makeText(
@@ -200,7 +203,7 @@ object ServerRequest {
         )
     }
 
-    fun bookRequest(context: Context, lesson: PrivateLesson) {
+    fun bookRequest(context: Context, lesson: PrivateLesson, update: () -> Unit) {
         val url =
             "${Config.ip}:${Config.port}/${Config.servlet}?action=${Config.book}&Session=${Config.session}&idCorso=${lesson.course.id}&idDocente=${lesson.teacher.id}&ora=${lesson.startAt}&day=${
                 Day.toIta(
@@ -225,7 +228,9 @@ object ServerRequest {
                             context.getString(R.string.book_confirmation),
                             Toast.LENGTH_LONG
                         ).show()
-                        CoursesVM.courses[Day.getDayNum(lesson.day)].value!!.remove(lesson)
+                        val target = CoursesVM.courses[Day.getDayNum(lesson.day)].value!!
+                        target.remove(lesson)
+                        update()
                     }
                 },
                 {

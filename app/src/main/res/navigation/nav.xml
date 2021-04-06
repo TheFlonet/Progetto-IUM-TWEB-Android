@@ -9,7 +9,7 @@
         android:id="@+id/courses"
         android:name="com.ium.easyreps.view.CoursesView"
         android:label="fragment_courses_view"
-        tools:layout="@layout/fragment_courses_view" >
+        tools:layout="@layout/fragment_courses_view">
         <action
             android:id="@+id/course_to_about"
             app:destination="@id/about" />
@@ -25,7 +25,7 @@
         android:id="@+id/about"
         android:name="com.ium.easyreps.view.About"
         android:label="fragment_about"
-        tools:layout="@layout/fragment_about" >
+        tools:layout="@layout/fragment_about">
         <action
             android:id="@+id/about_to_login"
             app:destination="@id/login" />
@@ -38,7 +38,7 @@
         android:id="@+id/history"
         android:name="com.ium.easyreps.view.HistoryView"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history_view" >
+        tools:layout="@layout/fragment_history_view">
         <action
             android:id="@+id/history_to_account"
             app:destination="@id/account" />
@@ -48,7 +48,7 @@
         android:id="@+id/login"
         android:name="com.ium.easyreps.view.Login"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/login_to_courses"
             app:destination="@id/courses" />
@@ -64,7 +64,7 @@
         android:id="@+id/account"
         android:name="com.ium.easyreps.view.Account"
         android:label="fragment_account"
-        tools:layout="@layout/fragment_account" >
+        tools:layout="@layout/fragment_account">
         <action
             android:id="@+id/account_to_history"
             app:destination="@id/history" />

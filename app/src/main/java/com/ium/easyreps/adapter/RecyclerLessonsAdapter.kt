@@ -1,8 +1,6 @@
 package com.ium.easyreps.adapter
 
-import android.content.Context
 import android.content.DialogInterface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.ium.easyreps.R
 import com.ium.easyreps.model.PrivateLesson
-import com.ium.easyreps.util.Config
 import com.ium.easyreps.util.Day
-import com.ium.easyreps.util.NetworkUtil
 import com.ium.easyreps.util.ServerRequest
+import com.ium.easyreps.viewmodel.CoursesVM
 import com.ium.easyreps.viewmodel.UserVM
 
 class RecyclerLessonsAdapter(
@@ -74,7 +68,7 @@ class RecyclerLessonsAdapter(
             )
         )
         .setPositiveButton(view.context.getString(R.string.confirm)) { dialogInterface: DialogInterface, _: Int ->
-            ServerRequest.bookRequest(view.context, lesson)
+            ServerRequest.bookRequest(view.context, lesson) {updateData(CoursesVM.courses[Day.getDayNum(lesson.day)].value!!)}
             dialogInterface.dismiss()
         }
         .setNegativeButton(view.context.getString(R.string.abort)) { dialogInterface: DialogInterface, _: Int ->

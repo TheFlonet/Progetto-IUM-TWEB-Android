@@ -2,11 +2,6 @@
     <string name="app_name">EasyReps</string>
 
     <!--DAYS-->
-    <string name="monday">Monday</string>
-    <string name="tuesday">Tuesday</string>
-    <string name="wednesday">Wednesday</string>
-    <string name="thursday">Thursday</string>
-    <string name="friday">Friday</string>
     <string name="mon">Mon</string>
     <string name="tue">Tue</string>
     <string name="wed">Wed</string>
@@ -27,7 +22,6 @@
 
     <!--MENU-->
     <string name="login">Login</string>
-    <string name="account">Account</string>
     <string name="about">About</string>
 
     <!--LOGIN-ACCOUNT-->
@@ -50,10 +44,8 @@
 
     <!--HISTORY-->
     <string name="cancel">Cancel</string>
-    <string name="cancel_reservation">Cancel reservation</string>
     <string name="discard_reservation">Discard reservation</string>
     <string name="discard_confirmation">Lesson unreserved</string>
-    <string name="discard_message">Do you want to discard %1$s with %2$s on %3$s (start at %4$d)?</string>
     <string name="discard_done">Reservation %1$s with %2$s on %3$s (start at %4$d). Discard or set ad Done</string>
     <string name="discard">Discard</string>
     <string name="username_invalid_error">Invalid username</string>
@@ -62,12 +54,9 @@
     <string name="no_connectivity">No internet connection, check your connectivity and try again</string>
     <string name="no_connection_error">No connection available</string>
     <string name="log_to_book">Log to book a lesson</string>
-    <string name="error_logging_in">Error while logging in</string>
     <string name="error_getting_courses">Error while getting courses list</string>
-    <string name="error_logout">Error while logging out</string>
     <string name="error_booking">Error while booking a lesson</string>
     <string name="error_cancel">Error during reservation cancelling</string>
-    <string name="error_discard">Error in discarding reservation</string>
     <string name="error_history">Error while getting history</string>
     <string name="error_done">Error while setting reservation as done</string>
     <string name="set_as_done">Set as done</string>

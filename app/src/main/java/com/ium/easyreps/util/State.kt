@@ -13,29 +13,20 @@ enum class State {
             }
         }
 
-        fun getStateName(i: Int): String{
-            return when (i) {
-                0 -> "Active"
-                1 -> "Done"
-                2 -> "Cancelled"
-                else -> throw IndexOutOfBoundsException("Invalid state index")
-            }
-        }
-
-        fun getStateName(i: State): String {
-            return when (i) {
-                ACTIVE -> "Active"
-                DONE -> "Done"
-                CANCELLED -> "Cancelled"
-            }
-        }
-
         fun fromItaToNum(state: String): Int {
             return when (state) {
                 "ATTIVA" -> 0
                 "EFFETTUATA" -> 1
                 "DISDETTA" -> 2
                 else -> throw IllegalArgumentException("Invalid state name")
+            }
+        }
+
+        fun toNum(state: State): Int {
+            return when (state) {
+                ACTIVE -> 0
+                DONE -> 1
+                CANCELLED -> 2
             }
         }
     }

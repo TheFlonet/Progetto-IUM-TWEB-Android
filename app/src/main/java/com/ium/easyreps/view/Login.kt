@@ -3,18 +3,13 @@ package com.ium.easyreps.view
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.ium.easyreps.R
-import com.ium.easyreps.util.Config
 import com.ium.easyreps.util.NetworkUtil
 import com.ium.easyreps.util.ServerRequest
 import com.ium.easyreps.viewmodel.UserVM
@@ -22,7 +17,7 @@ import com.ium.easyreps.viewmodel.UserVM
 class Login : Fragment() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var mView: View
-    var user = UserVM.user.value
+    private var user = UserVM.user.value
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
