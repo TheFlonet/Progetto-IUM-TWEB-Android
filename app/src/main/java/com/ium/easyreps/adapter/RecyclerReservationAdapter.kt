@@ -42,7 +42,6 @@ class RecyclerReservationAdapter(private var reservations: ArrayList<Reservation
         holder.day.text = Day.getDayName(reservation.day)
         holder.layout.setOnClickListener {
             changeState(it, reservation)
-
         }
     }
 
